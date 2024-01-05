@@ -1,0 +1,198 @@
+---
+title: "Project EFA"
+names: Kate, Ndeh, Caryn
+output: 
+  html_document: 
+    keep_md: yes
+date: "2023-04-04"
+---
+
+```{r}
+if(!require(installr)) {
+  install.packages("installr"); 
+  require(installr)}
+```
+
+
+```{r}
+
+library(rmarkdown); library(knitr); library(readxl)
+library(moments); library(corrplot); library(pso);library(GPArotation); library(lavaan); library(scatterplot3d);library(corrplot);library(rgl);library(moments); library(psych)
+```
+
+
+```{r}
+diseasesdata<-  read.csv("~/Heart Disease Data Updated.csv")
+head(diseasesdata)
+dim(diseasesdata)
+diseasedata<-as.matrix(diseasesdata)
+head(diseasedata)
+```
+#1
+
+```{r}
+#Predictor variables analysis
+
+predictordata<-diseasedata[,-c(1,16,17)]
+head(predictordata)
+dim(predictordata)
+R<-cor(predictordata)
+corrplot(R)
+
+#Eigen values
+eigen(cor(predictordata))$values
+
+#Kaiser's criterion: retain 4  factors
+#Joliffe's criterion: retain 11 factors. Huge difference between the number of clusters each criterion suggests.
+#Inflection point
+
+eigenvalue<-c(2.6609413,1.3914757,1.1550720,1.1052597,0.9739275,0.9471217,0.9050526,0.8756531,0.8292909,0.7852854,0.7365916,0.5897894,0.5695995,0.4749396)
+
+plot(eigenvalue,type="b")
+
+#The intrinsic dimensionality is 2 clusters as the inflection point is the third point from the left of the graph
+```
+
+#2 Unrotated loading matrices &  Identify optimal orthogonal rotation
+
+```{r}
+#Based Kaiser's criterion
+
+unrotematrix<-pca(r=R,nfactors=4, rotate="none")$loadings[]   #unrotated matrix
+unrotematrix
+
+corrplot(unrotematrix)    #visualize the loadings on each factor
+
+#let's check for any complex dimensions
+
+which(rowSums(abs(unrotematrix)>.3)>=2)
+#BMI,Mental Health, Sex, and Average age load significantly on more than one factor.
+
+rotatematrix<-pca(r=R, nfactors=4,rotate="varimax")$loading[] #orthogonal varimax rotation
+rotatematrix
+
+#let's check for any remaining complexities
+which(rowSums(abs(rotatematrix)>.3)>=2)
+
+#after varimax rotation, there still remains complexity for the following dimensions: BMI, average age, and a new complex factor: diabetic.
+
+#Since there's still complexity with orthogonal criterion, let's try other oblique rotation
+
+obliquerotatematrix<-pca(r=R, nfactors=4,rotate="oblimin")$loadings[] #oblique rotation
+obliquerotatematrix
+
+#let's check for any remaining complexities
+which(rowSums(abs(obliquerotatematrix)>.3)>=2)
+
+obliquerotatematrix<-pca(r=R, nfactors=4,rotate="oblimin")$loadings[] #oblique rotation
+
+#after oblique rotation, there still remains complexity for the following dimensions: BMI, Smoking, and Mental health.BMI is a complex dimensions after both orthogonal and oblique rotation;mental health was complex dimension prior to rotation and after oblique rotation while smoking became a complex dimension after oblique rotation.Oblique rotation was not very helpful here because it only reduced complex dimensions by one dimension, similar to orthogonal rotation's impact.Also,oblique rotation was not necessary in this case because none of the factors have a correlation greater than .3
+
+#Since there still remains complexity based on Kaiser's criterion, let's try using Jolliffe's criterion
+
+
+```
+
+#2b 
+
+```{r}
+#Based on Joliffe's criterion
+unrotamatrix<-pca(r=R,nfactors=11, rotate="none")$loadings[]   #unrotated matrix
+unrotamatrix
+
+corrplot(unrotamatrix)    #visualize the loadings on each factor
+
+#let's check for any complex dimensions
+
+which(rowSums(abs(unrotamatrix)>.3)>=2)
+#11 out of 14 dimensions are complex. VERY interesting!
+
+rotatamatrix<-pca(r=R, nfactors=11,rotate="varimax")$loading[] #orthogonal varimax rotation
+rotatamatrix
+
+#let's check for any remaining complexities
+which(rowSums(abs(rotatamatrix)>.3)>=2)
+
+#after varimax rotation, there still remains complexity for the following dimensions: average age and mental health.
+
+#Since there's still complexity with orthogonal criterion, let's try other oblique rotation
+
+obliquerotatamatrix<-pca(r=R, nfactors=11,rotate="oblimin")$loading[]#oblique rotation
+obliquerotatamatrix
+
+#let's check for any remaining complexities
+which(rowSums(abs(obliquerotatamatrix)>.3)>=2)
+
+obliquerotatamatrix<-pca(r=R, nfactors=11,rotate="oblimin")
+obliquerotatamatrix
+
+#After oblique rotation, there still remains complexity for one dimension only: average age. Oblique rotation was helpful here because it reduced complex dimensions to one only while orthogonal rotation had reduced complex dimensions to 2. With this, oblique rotation was not necessary in this case because none of the factors have a correlation greater than .3.
+
+#Since there's still complexity with Joliffe's criterion, let's try using the inflection point criterion.  
+```
+#2c Inflection point
+
+```{r}
+#Use of inflection point criterion
+
+
+unrotimatrix<-pca(r=R,nfactors=2, rotate="none")$loadings[]   #unrotated matrix
+unrotimatrix
+
+corrplot(unrotimatrix)    #visualize the loadings on each factor
+
+#let's check for any complex dimensions
+
+which(rowSums(abs(unrotimatrix)>.3)>=2)
+#Mental health and average age are complex dimensions
+
+rotatimatrix<-pca(r=R, nfactors=2,rotate="varimax")$loading[] #orthogonal varimax rotation
+rotatimatrix
+
+#let's check for any remaining complexities
+which(rowSums(abs(rotatimatrix)>.3)>=2)
+#after varimax rotation, there still remains complexity for one dimension only: average age. It is also important to note that sex, alcohol drinking, and smoking don't load significantly on either factor. 
+
+#let's try oblique rotation now.
+obliquerotatimatrix<-pca(r=R, nfactors=2,rotate="oblimin")$loading[]#oblique rotation
+obliquerotatimatrix
+
+#let's check for any remaining complexities
+which(rowSums(abs(obliquerotatimatrix)>.3)>=2)
+#after oblique rotation there still remains complexity for mental health and diabetic. It is also important to note that sex, alcohol drinking, and smoking continue to not load significantly on either factor.
+
+obliquerotatimatrix<-pca(r=R, nfactors=2,rotate="oblimin")
+obliquerotatimatrix
+#oblique rotation was not necessary for rotation because none of the factors have a correlation greater than .3.
+
+#Also, Oblique rotation was not very helpful in this scenario because compared to orthogonal rotation, oblique rotation left 2 complex dimensions while orthogonal rotation resulted to only one complex dimension.
+
+```
+
+#summarize and interpret variance
+```{r}
+#Based on the analysis above, we select orthogonal rotation based on inflection point criterion because it leaves us with the lowest number of complex dimensions.
+
+pca(r=R, nfactors=2,rotate="varimax") 
+
+#Communality& variance discussion
+
+#Here's the variance in our data that was retained in each row : 13.9% in BMI, 8.1% in Smoking, 5.3% in Alcohol drinking, 14.4% in Stroke, 51,5% in Physical health, 51.7% in Mental Health, 51.1% in DiffWalking, 1.5% in Sex, 56.3% in average age, 28.2% in Diabetic, 25.7% in Physical health, 58.9% in GenHealth, 21.5%  in Sleep time, 17.3% in Asthma. We've lost more than 30% of our data in each dimension and this is concerning. 
+
+#19% of the variability of the data is accounted for by the first factor, and 10% of the variability of the data is accounted for by the second factor. With both factors, we've lost around 61% of our data which is beyond the acceptable threshold.   
+```
+```{r}
+#Analysis of variance and communality based on other criteria.
+
+#Kaiser's
+pca(r=R,nfactors=4, rotate="none")
+
+#the 4 factors retain 45% of the original data (variance)
+
+#jolliffe's 
+pca(r=R,nfactors=11, rotate="none")
+#the 11 factors retain 88% of the original data (variance)
+
+#ask prof about which one to choose(the one where we don't lose much data?)
+
+```

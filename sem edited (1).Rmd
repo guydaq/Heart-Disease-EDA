@@ -1,0 +1,137 @@
+---
+title: "Structural Equation Model"
+author: "Kate Sebaganji, Ndeh Awasum, Karen Vuong"
+date: '2023-05-03'
+output: html_document
+---
+
+
+```{r}
+if(!require(installr)) {
+  install.packages("installr"); 
+  require(installr)}
+```
+
+
+```{r}
+library(rmarkdown); library(knitr); library(readxl)
+library(moments); library(corrplot); library(pso)
+library(psych); library(GPArotation); library(lavaan); library(scatterplot3d);library(corrplot);library(moments)
+```
+
+
+```{r}
+diseasesdata<-read.csv("Heart Disease Data Updated.csv")
+dim(diseasesdata)
+head(diseasesdata)
+
+diseasedata<-as.matrix(diseasesdata)      
+```
+
+```{r}
+covdis<- cov(diseasedata)
+covdis
+```
+
+```{r}
+
+#edits: i removed response variables from measurement model and added factors to the structural model
+diseqn <- '
+        # Measurement Model 
+        
+        Wellbeing =~ PhysicalHealth  + GenHealth + DiffWalking + PhysicalActivity 
+        Weight =~ BMI + Diabetic
+
+        # Measurement Model (Covariance Specification)
+        Smoking ~~ AlcoholDrinking
+        Smoking ~~ Sex
+        Wellbeing ~~ MentalHealth
+        MentalHealth ~~ Average.Age
+
+        # Structural Model
+        HeartDisease ~ Asthma + Stroke + Sex + SleepTime +Smoking + AlcoholDrinking + MentalHealth + Average.Age + Weight + Wellbeing
+        KidneyDisease ~ Asthma + Stroke + Sex + SleepTime +Smoking + AlcoholDrinking + MentalHealth + Average.Age + Weight + Wellbeing
+        SkinCancer ~ Asthma + Stroke + Sex + SleepTime +Smoking + AlcoholDrinking + MentalHealth + Average.Age+           Weight + Wellbeing
+'
+dismod <- sem(diseqn, sample.cov = covdis, sample.nobs = 319795)
+dismod
+```
+```{r}
+#our model says we have 89 degrees of freedom
+
+#number of data point
+17*18/2
+
+#we have 153 data points and we calculated 57 paths/parameters that need to be estimated. So our degree of freedom would be 80 which is greater than 0.
+
+
+```
+#2. identify and discuss significant indicators of included multidimensional factors
+
+```{r}
+C## weight =~ Diabetic: A 1 unit increase in diabetic leads to a 0.070 unit increase in weight. This is a significant effect because the p-value is less than 0.05.
+
+#well being =~ GenHealth: A 1 unit increase in gen-health leads to a 0.144 units decrease in wellbeing. The p-value is 0.000 and the z-score is very high. This is a significant effect.
+
+#well being =~ physical activity: A 1 unit increase in physical activity leads to a .031 units decrease in wellbeing. The p-value is 0.000 and it is less than 0.05 so physical activity has a significant effect on wellbeing.
+
+#well being =~ diff walking: A 1 unit increase in diff walking leads to a .040 units decrease in wellbeing. This is a significant effect because the p-value is 0.000.
+
+#what do we do for values were p-value is na?
+#also look more into actually the correct interpretation on kaggle with each variable.
+
+```
+#3.  identify and discuss significant predictors of response variables and factors
+```{r}
+parameterEstimates(dismod)[1:40,]
+
+#heart disease
+
+#HeartDisease  ~  asthma: A 1 unit increase in asthma leads to a 0.017 units increase in Heart disease. This effect is significant because the p-value is 0.000 (which is less than the threshold: 0.05).
+
+#HeartDisease  ~  stroke: A 1 unit increase in stroke leads to a 0.192 units increase in Heart disease. This effect is significant because the p-value is 0.000 (which is less than the threshold: 0.05).
+
+#HeartDisease  ~  sex: being female instead of male leads to a 0.050 units decrease in Heart disease. This effect is significant because the p-value is 0.000 (which is less than the threshold: 0.05).
+
+#HeartDisease  ~  sleeptime: A 1 unit increase in sleeptime leads to a 0.001 units increase in Heart disease. This effect is significant because the p-value is 0.003 (which is less than the threshold: 0.05).
+
+#? interpretation suscipiscious
+#HeartDisease  ~  smoking: A 1 unit increase in smoking leads to a 0.021 units decrease in Heart disease. This effect is significant because the p-value is 0.000 (which is less than the threshold: 0.05).
+  
+#?interpretation to ask about
+#?#HeartDisease  ~  mental health: A 1 unit increase in mental health leads to a 0.000 units increase in Heart disease. This effect is significant because the p-value is 0.000 (which is less than the threshold: 0.05).
+
+#?to look into more
+#HeartDisease  ~  alcohol drinking: A 1 unit increase in alcohol drinking leads to a 0.016 decrease in Heart disease. This effect is significant because the p-value is 0.000 (which is less than the threshold: 0.05).
+
+#HeartDisease  ~  weight: A 1 unit increase in weight leads to a 0.009 units increase in Heart disease. This effect is significant because the p-value is 0.000 (which is less than the threshold: 0.05).
+
+#HeartDisease  ~  wellbeing: A 1 unit increase in wellbeing leads to a 0.009 units increase in Heart disease. This effect is significant because the p-value is 0.000 (which is less than the threshold: 0.05).
+
+#HeartDisease  ~  Average.Age: A 1 unit increase in Average Age leads to a 0.003 unit increase in Heart disease. The p-value is 0.000 and this effect has the highest z-score as compared to the other dimensions that load to Heart disease
+
+#kidney disease
+
+#KidneyDisease  ~  Average.Age:A 1 unit increase in Average Age leads to a 0.001 unit increase in Kidney disease. The p-value is 0.000 and this effect has the highest z-score as compared to the other dimensions that load to Kidney disease
+
+
+
+
+#SkinCancer  ~  Average.Age:A 1 unit increase in Average Age leads to a 0.004 unit increase in Skin Cancer The p-value is 0.000 and this effect has the highest z-score as compared to the other dimensions that load to Skin cancer
+
+```
+#4 describe practical significance of estimated model parameters- which is significant in magnitude?
+
+```{r}
+#to ask abt
+```
+
+
+#5 summarize and interpret model fit
+```{r}
+fitMeasures(dismod)
+
+#cfi, mfi, nnfi, rmsea, mfi, aic interpretation
+```
+
+

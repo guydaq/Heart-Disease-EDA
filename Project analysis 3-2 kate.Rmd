@@ -1,0 +1,257 @@
+---
+title: "Project Part 1"
+output:
+  html_document: default
+  pdf_document: default
+date: "2023-02-28"
+---
+
+```{r}
+if(!require(installr)) {
+  install.packages("installr"); 
+  require(installr)}
+updateR()
+```
+
+```{r}
+install.packages("rmarkdown")
+install.packages("knitr")
+install.packages("readxl")
+install.packages("moments")
+install.packages("corrplot")
+install.packages("pso")
+install.packages("psych")
+install.packages("GPArotation")
+install.packages("lavaan")
+install.packages("scatterplot3d")
+install.packages("corrplot")
+install.packages("rgl")
+install.packages("moments")
+
+
+library(rmarkdown); library(knitr); library(readxl)
+library(moments); library(corrplot); library(pso)
+library(psych); library(GPArotation); library(lavaan); library(scatterplot3d);library(corrplot);library(rgl);library(moments)
+
+```
+
+```{r}
+diseasesdata<-  read.csv("C:/Users/seba6366/Downloads/Heart Disease Data Updated.csv")
+View(diseasesdata)
+View(diseasesdata)
+dim(diseasesdata)
+diseasesdata
+
+diseasedata<-as.matrix(diseasesdata)
+dim(diseasedata)
+```
+
+#1
+
+```{r}
+
+#The original dataset had both numerical and text values. We changed all the text values to numerical values. For dimensions with the following names: Heart Disease, Smoking, Alcohol Drinking, Stroke, DiffWalking, Diabetic, Physical Activity, Asthma, KidneyDisease, Skin Cancer, all entries with response 'No' were transformed to '0' and entries with 'Yes' were transformed to 1.
+
+#The dimension named 'Sex' also had text entries named 'female' and 'male'. These were transformed to numerical values - '0' representing 'male' and '1' represents 'female.' 
+
+#The dimension named 'race' was removed from our dataset because it had more than 5 race classifications and we were not very clear about how to change that to numerical variables. In addition to this, race was not a very important dimension for our analysis.
+
+#We transformed dimension 'age' to 'average.age' because the initial data entries for age where classifications.We transformed these classifications to single numbers by finding the average of each age classification. For the age classification "84-above", we simply turned this to average age=84.
+
+#In the original data, Gen health had text entries. The following were transformed to their corresponding numerical value: 'Excellent'=5, 'Very good'=4. 'Good'=4, 'Fair'=1, and 'Poor'=0.
+
+```
+
+#2
+
+```{r}
+#1 D evaluation 
+apply(X = diseasedata, MARGIN = 2, FUN = mean)
+apply(X = diseasedata, MARGIN = 2, FUN = sd)
+apply(X = diseasedata, MARGIN = 2, FUN = var)
+apply(X = diseasedata, MARGIN = 2, FUN = skewness)
+apply(X = diseasedata, MARGIN = 2, FUN = kurtosis)
+lapply(names(diseasesdata),FUN= function(x) hist(diseasedata[,x],main=paste("Histogram of", x)))
+
+#Analysis
+
+#Heart disease data has a mean of 0.086, a standard deviation of 0.28, and a variance of 0.783. It has a skewness of 2.963 hence it's distribution is right skewed. Heart disease's distribution is leptokurtic since its kurtosis is 9.776. On the histogram, we also see that most responses in our data were 1 hence the heart disease distribution is right skewed. 
+
+#BMI has a mean of 28.325, a standard deviation of 6.356, and a variance of 40.4. It has a skewness of 1.332 hence it's distribution is right skewed. BMI's distribution is leptokurtic since its kurtosis is 6.89.We can also see the shape of the BMI distribution on the histogram    
+
+#Smoking has a mean of 0.412, a standard deviation of 0.492, and a variance of 0.242. It has a skewness of 0.356 hence it's distribution is right skewed but very close to being normally distributed, which can also be seen on the histogram. Smoking's distribution is platykurtic since its kurtosis is 1.126.
+
+#Alcohol drinking has a mean of 0.068, a standard deviation of 0.252, and a variance of 0.063. It has a skewness of 3.429 and a kurtosis of 12.758 which means that the distribution is right skewed and leptokurtic as we can see on the histogram.
+
+#Stroke has a mean of 0.038, a standard deviation of 0.191, and a variance of 0.036. It has a skewness of 4.851 and a kurtosis of 24.536 hence the distribution is right skewed and leptokurtic as we can see on the histogram. 
+
+#Physical Health has a mean of .372, a standard deviation of 7.951, and a variance of 63.216. It has a skewness of 2.604 and a kurtosis of 8.528; hence its distribution is right skewed and leptokurtic as shown on the histogram. 
+
+#Mental Health has a mean of 0.138, a standard deviation of 7.956, and a variance of 63.286. It has a skewness of 2.331 and a kurtosis of 7.404; hence its distribution is right skewed and leptokurtic as shown on the histogram. 
+
+#Diffwalking has a mean of 0.139, a standard deviation of 0.346, and a variance of 0.12. It has a skewness of 2.089 and a kurtosis of 5.362; hence its distribution is right skewed and leptokurtic as shown on the histogram. 
+
+#Sex has a mean of 0.525, a standard deviation of 0.499, and a variance of 0.249. It has a skewness of -0.099 hence it's distribution is left skewed but very close to being normally distributed which can also be seen on the histogram. Its kurtosis is 1.01, thus its distribution is platykurtic. 
+
+# Average Age has a mean of 54.507, a standard deviation of 17.945, and a variance of 322.04. It has a skewness of -0.285 and a kurtosis of 2.012; hence its distribution is left skewed and platykurtic as depicted on the histogram. 
+
+# Diabetic has a mean of 0.136, a standard deviation of 0.342, and a variance of 0.117. It has a skewness of 2.129 and a kurtosis of 5.532; hence its distribution is right skewed and leptokurtic as depicted on the histogram. 
+
+#PhysicalActivity has a mean of 0.775, a standard deviation of 0.417, and a variance of 0.174. It has a skewness of -1.32 and a kurtosis of 2.741; as we can also see on the histogram, physical activity's distribution is left skewed and platykurtic. 
+
+#GenHealth has a mean of 3.595, a standard deviation of 1.043, and a variance of 1.088. It has a skewness of -0.454 and kurtosis; hence its distribution is left skewed and platykurtic as also shown on the histogram. 
+
+#SleepTime has a mean of 7.097, a standard deviation of 1.436, and a variance of 2.06211. It has a skewness of 0.679 and a kurtosis of 10.854; hence its distribution is right skewed and leptokurtic as we can also see on the histogram. 
+
+#Asthma has a mean of 0.134, a standard deviation of 0.341, and a variance of 0.116. It has a skewness of 2.148 and a kurtosis of 5.614; hence its distribution is right skewed and leptokurtic as shown on the histogram. 
+
+#KidneyDisease has a mean of 0.037, a standard deviation of 0.188, and a variance of 0.035. It has a skewness of 4.918 and kurtosis of  25.187; hence its distribution is right skewed and leptokurtic as we can also see on the histogram. 
+
+#SkinCancer has a mean of 0.093, a standard deviation of 0.291, and a variance of 0.085. It has a skewness of 2.798  and a kurtosius of 8.827; hence its distribution is right skewed and leptokurtic as shown on the histogram. 
+```
+
+#3
+
+```{r}
+#1 D outliers
+
+diseasenobinary<-diseasedata[,-c(1,3,4,5,8,9,11,12,15,16,17)]   #Remove dimensions with binary variables
+View(diseasenobinary)
+
+which(scale(abs(diseasenobinary[,1]))> qnorm(1-0.00000001/2))  #outliers for BMI dimension
+#At .000001% significance level, BMI has 232 outliers
+
+#remove outliers for BMI
+diseasexoutbmi<- diseasenobinary[-c(562,2360,3144,9089,9359,9500,10660,13696,13868,16075,18928,20087,21096,21222,22164,22323,22443,24009,25748,25872,28463,29882,30066,30755,36281,37313,38171,38362,38422,39468,40387,40707,40974,41313,42102,43460,50057,50230,50372,50484,50543,51039,51041,51640,51822,52311,52415,52642,54063,58846,59259,59847,62847,63401,65114,70245,70595,71186,72092,73478,79171,79546,79691,79751,80117,80506,80978,81263,83371,84579,88568,88977,93237,93668,94174,94997,96627,97938,99837,100668,102321,103164,104268,104541,104617,104896,105477,106467,108221,110039,111361,112699,114088,116509,117166,120620,121145,121223,126476,126662,126897,126992,128369,132580,138049,138548,139408,144356,147786,148038,150699,153634,153791,154380,156094,156396,159674,159942,160231,160361,164796,171329,171706,173163,174978,175205,175963,176301,176389,177478,177485,180854,184437,184780,185478,188071,189015,189112,191646,192260,192587,192765,193397,193854,194222,194366,194487,198930,201174,202150,204974,207565,209773,209922,210934,213607,217627,222003,223554,226893,228782,229008,229432,229789,230433,230740,230761,231894,238362,238420,239469,241196,242247,242835,242856,246650,249456,249716,250296,250333,250789,250985,251941,252707,256408,256478,257383,258477,258640,258973,259711,260166,261461,262244,262375,262772,263245,263366,263405,264500,264944,265164,265547,266010,266285,267476,267776,267894,268694,271260,273675,274127,274505,278437,279636,286646,287382,287882,288391,288604,288911,289380,290184,292523,298691,298850,299832,301062,302384,304394,308296,311346),]
+View(diseasexoutbmi)
+
+#evaluate influence of outliers
+mean(diseasedata[,2])
+mean(diseasexoutbmi[,1])
+#After having removed outliers, the mean of BMI decreased by 0.03229852 units.
+
+var(diseasedata[,2])
+var(diseasexoutbmi[,1])
+#After having removed outliers, the variance of BMI decreased by 1.44255 units.
+
+sd(diseasedata[,2])
+sd(diseasexoutbmi[,1])
+#After having removed outliers, the standard deviation of BMI decreased by 0.1145092 units.
+
+skewness(diseasedata[,2])
+skewness(diseasexoutbmi[,1]) 
+
+#After having removed outliers, the skewness of BMI remained positive and decreased by 0.191454 units. After the removal of outliers, BMI's distribution remained right skewed.
+
+kurtosis(diseasedata[,2])
+kurtosis(diseasexoutbmi[,1])
+
+#After having removed outliers, the kurtosis of BMI decreased by 1.628185 units. Even after the removal of outliers, BMI still has a leptokurtic distribution.
+
+hist(diseasedata[,2])
+hist(diseasexoutbmi[,1])
+
+#After removing the outliers, BMI's distribution shape did not change much as we can see on both histograms.
+
+#Since the removal of outliers from the BMI data did not significantly change any of summary statistics of the original BMI data, we can conclude that the outliers are not significant.
+
+```
+
+#le's check if other non-binary dimensions have outliers
+
+```{r}
+which(scale(abs(diseasenobinary[,2]))> qnorm(1-0.0001/2))  #outliers for physical health
+#At .01% significance, Physical health does not have any outliers
+which(scale(abs(diseasenobinary[,3]))> qnorm(1-0.001/2))  #outliers for mental health
+#At .1% significance, Physical health does not have any outliers
+which(scale(abs(diseasenobinary[,4]))> qnorm(1-0.01/2))  #outliers for average age
+#At 1% significance level, average age does not have any outliers
+which(scale(abs(diseasenobinary[,5]))> qnorm(1-0.01/2))  #outliers for general health
+#At 1% significance level, general health does not have any outliers
+```
+
+#Let's check if sleep time has outliers
+
+```{r}
+which(scale(abs(diseasenobinary[,6]))> qnorm(1-0.00001/2))  #outliers for sleep time
+#At .001% significance level, sleep level has 902 outliers
+
+diseasexousleep<-diseasenobinary[-c(11,263,619,719,734,906,1159,1168,1217,1285,1383,1743,1774,1932,2133,2180,2368,2526,3154,3234,3250,3642,3919,4967,5026,5295,5520,5681,5834,6358,7563,7863,8069,8139,8298,8469,8833,8945,9359,9410,9500,9704,9938,10641,10656,10813,11148,11544,11735,12028,12302,12340,12664,12717,12867,13269,14261,14507,15206,15303,15737,15930,16150,16328,16578,16580,16824,16835,16993,17112,17254,17321,17529,17553,17555,17766,17805,17846,17874,18185,18258,18368,18720,19020,19274,19276,19404,20018,20234,20995,21738,22106,22620,22670,23062,23089,23589,23865,24864,25830,26149,26153,26982,27334,27409,27431,27524,27910,28795,28980,29405,29882,30079,30439,30793,31244,31956,32076,32116,32461,32479,32667,32871,33189,33873,34123,34464,34534,34791,35364,35372,35604,36800,37060,37243,37348,37376,37509,38266,38469,38537,38946,39159,39582,39651,39737,39868,39897,39940,40016,40141,40248,40289,40686,40859,40886,41068,41159,42266,42448,42497,42895,42913,42951,43213,43340,43465,43708,43870,44394,44455,44470,44544,44609,44734,45516,45671,45942,46053,46479,46607,46860,47173,47264,47385,47454,47591,47673,48215,48220,48360,48569,48604,48637,48679,48789,49009,49106,49641,49671,50094,50138,50188,50290,50336,50388,50520,50583,50718,50735,50750,51086,51095,51376,51470,51547,51640,51698,51702,51720,51904,52073,52453,52802,52971,53147,53829,54261,54297,54514,54589,54703,54957,55012,55013,55240,55351,55432,55700,55787,55851,56069,56072,56206,56272,56372,56619,56651,57081,57085,57659,58045,58143,58333,58662,59294,59345,59723,59886,60664,60720,60991,61350,61617,62090,62635,63282,63593,65621,68059,68218,68838,69008,69384,70326,70569,70998,71952,72520,72715,72935,73257,73318,73978,74142,74194,74200,74720,74880,74989,75002,75969,77228,77286,77407,77608,77699,77862,78065,78250,78484,78873,79095,79174,79323,79353,79631,79761,80076,80170,80363,80367,80587,81012,81183,81267,81843,82730,83099,83226,83500,86044,87035,87431,87906,88728,88931,88938,89623,89651,89758,89767,90986,91877,92094,92200,92396,92618,92659,93827,93887,94102,94118,94576,95320,96734,97098,97784,98758,98888,98978,99171,99191,99339,99718,99781,100096,100097,100105,100115,100643,100663,100695,100840,101360,101855,101957,101973,102003,102245,102293,102435,102599,102659,102692,103059,103215,103381,103582,103644,103948,104000,104326,104559,104739,105782,106383,106395,106825,107429,108934,109286,111165,111217,111935,112764,113514,113759,114173,114349,115355,115862,116057,116112,116253,116454,116924,117210,118051,118342,118790,119565,119664,120189,120329,120872,120879,121395,121662,121879,122395,122857,123063,123194,124088,124638,124928,126012,126163,126391,126564,126770,126785,127359,127693,128081,128436,129306,129591,129752,129823,130029,130685,130756,130933,131405,131455,131499,131530,133686,133988,134018,134873,134973,135367,135668,139050,139062,139615,139805,139813,140046,140321,140658,140729,140822,141030,142823,143554,144017,144425,144888,145352,145876,146348,146506,146690,146696,146897,149053,149064,149073,149085,149374,149413,150216,150257,150344,150377,150397,150401,150412,150650,150741,150950,151473,151694,151763,151875,151970,152314,152825,153166,153251,153566,153643,153708,153774,154390,154469,154516,155721,156056,156214,156743,156905,157896,157952,157972,158197,158812,159919,160492,160505,161026,161364,161544,161735,162749,163729,163830,164086,164749,165373,165473,166215,166992,167930,169012,169016,169162,170227,170349,170407,170436,172393,172539,173671,173714,174130,174327,174744,174975,175215,175483,175743,175955,176121,176364,176375,176807,177149,178549,178823,179609,180989,181177,181505,181724,182200,183476,183675,183916,184238,184537,184580,187112,187323,187398,187968,188698,188877,190030,190312,190666,190804,191065,191494,191654,191894,191914,192173,192673,193165,193741,193785,194538,195418,196369,196385,196676,196706,197111,197260,197387,197758,198532,199230,199521,200675,201216,201316,202422,202573,202836,202939,203219,203312,204532,205301,205436,205871,206350,206804,206875,207081,207503,207725,208256,208532,208707,209373,209540,210209,210219,210528,210675),]    #part 1
+View(diseasexousleep)
+
+diseasexousleep<-diseasexousleep[-c(211216,213044,214042,216222,218174,218228,218988,219740,220181,220282,221063,221530,221811,222168,222309,222369,222465,222624,222732,223628,223642,224295,224413,224911,225089,225598,225627,225687,225752,226072,227059,227478,227851,228656,229281,229326,229383,230406,230608,231160,231264,231742,231840,231955,232182,232398,232809,232985,233142,233346,233397,233803,233833,233856,235628,237072,237933,238355,239300,239835,240120,240273,240348,240720,241424,241832,242646,242939,243045,243144,243695,243871,245550,246236,246643,248094,248118,248203,248431,248603,248701,249057,249625,249834,250019,250350,250416,250650,250849,252511,252584,252743,253078,254121,254234,255873,255995,256134,256744,256926,257171,257286,257800,258370,258481,258483,258570,258653,258700,259273,259404,259693,259920,260162,261217,261837,262035,262098,262156,262213,262425,262536,263104,263217,263283,263428,263699,263710,264032,264144,264396,264739,264976,265181,265568,266151,266252,266698,266908,266990,267093,267120,267555,267947,268047,268187,269345,269351,269631,269887,270006,270046,270118,270314,270429,270526,271770,272116,272235,273038,273176,273241,273653,273780,276385,276473,276475,276666,277088,278036,278147,278746,278883,279083,279648,280063,280402,281522,281850,283077,283481,283523,283565,283917,285077,285622,286142,286291,286478,286649,286874,286904,286947,287365,287414,287854,287855,288108,288125,288539,288910,289212,289625,289782,290805,290869,292365,292792,293639,293698,294140,294388,295337,295873,296560,297974,299264,299980,300500,300524,300717,300832,301111,301655,301737,302010,302179,302509,302634,302899,303445,303842,304364,304523,304579,304961,305558,305847,305970,306106,306508,306679,307771,307792,307854,307987,308187,308563,309646,309746,309849,310207,310281,310561,311191,312504,313085,313659,314169,314479,314643,315654,315664,318989,319372),] #continuation of data set with no BMI outliers
+View(diseasexousleep)
+
+#evaluate influence of outliers
+mean(diseasedata[,14])
+mean(diseasexousleep[,6])
+#After having removed outliers, the mean of sleep time decreased by 0.02 units.
+
+var(diseasedata[,14])
+var(diseasexousleep[,6])
+#After having removed outliers, the variance of sleep time decreased by 0.1727487 units.
+
+sd(diseasedata[,14])
+sd(diseasexousleep[,6])
+#After having removed outliers, the standard deviation of sleep time decreased by 0.062 units.
+
+skewness(diseasedata[,14])
+skewness(diseasexousleep[,6]) 
+
+#After having removed outliers, the skewness of sleep time remained positive and decreased by 0.5737 units. After the removal of outliers, BMI's distribution is closer to being normally distributed than before removing them.
+
+kurtosis(diseasedata[,14])
+kurtosis(diseasexousleep[,6])
+
+#After having removed outliers, the kurtosis of sleep time decreased by 3.73 units. Even after the removal of outliers, sleep time still has a leptokurtic distribution.
+
+hist(diseasedata[,14])
+hist(diseasexousleep[,6])
+
+#After removing the outliers, sleep time's distribution shape did not change much as we can see on both histogram.
+
+#Since the removal of outliers from the sleep time data did not significantly change any of summary statistics of the original sleep time data, we can conclude that the outliers are not significant.
+
+```
+
+#4
+
+```{r}
+#run a correlation and drop the insignificant ones
+
+diseasedatacorp <- cor(diseasesdata)    #correlation matrix
+diseasedatacorp
+
+diseasedatacor <- cor(diseasesdata)    #other correlation matrix
+diseasedatacor
+
+
+diseasedatacor[lower.tri(diseasedatacor,diag=TRUE)] <- NA     #drop duplicates (lower triangle)
+diseasedatacor[diseasedatacor == 1] <- NA                     #drop perfect correlations
+
+View(diseasedatacor)
+
+diseasedatacor<-as.data.frame(as.table(diseasedatacor))     #change correlation matrix to a 3 columns table
+View(diseasedatacor)
+
+diseasedatacor <- na.omit(diseasedatacor)         #remove the NA values from above 
+View(diseasedatacor)
+
+diseasedatacoret<-subset(diseasedatacor, abs(diseasedatacor$Freq)>0.05)#choose significant values
+View(diseasedatacoret)
+
+diseasedatacoret<-diseasedatacoret[order(-abs(diseasedatacoret[,3])),]      #order by most significant
+
+
+print(diseasedatacoret)
+
+cormatrix<-reshape2::acast(diseasedatacoret,Var1~Var2, value.var = "Freq")
+corrplot(cormatrix,is.corr=FALSE, method="square",tl.col="black", na.label=" ")
+
+#From the correlation matrix, we can conclude that most of the variables in this dataset have very small correlation values. For most variables, the correlation value is less than 0.05. The most significant correlation betwen input variables and in the whole dataset is between DiffWalking and GenHealth with a correlation of 0.428. This means that as one's general health is ranked higher, the easier they find walking or climbing up stairs.  
+
+#We also see that none of the input variables have a very high correlation with our output variables: HeartDisease, SkinCancer, and Kidney disease.GenHealth has the highest correlation with HeartDisease, which is -.243. This means that the higher ranking one's general health has, the lower chance they have of having a heart disease. Average Age has the highest correlation with skin cancer, which is 0.262; this means that the older a person is, the higher the chance that they have skin cancer. GenHealth also has the highest correlation with Kidney disease, which is -0.175; this means that the higher ranking one's general health has, the lower the chance that they ever had kidney disease.
+
+# The correlation plot below was modified so that we can focus on analyzing correlation values above 0.05 as they are the most essential and meaningful correlation values that we will focus on in this analysis. 
+#add scatterplots and descriptions-Ndeh and Karen
+```

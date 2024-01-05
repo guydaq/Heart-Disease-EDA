@@ -1,0 +1,242 @@
+---
+title: "Project EFA"
+names: Kate, Ndeh, Caryn
+output: 
+  html_document: 
+    keep_md: yes
+date: "2023-04-04"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+if(!require(installr)) {
+  install.packages("installr"); 
+  require(installr)}
+```
+
+
+```{r}
+library(rmarkdown); library(knitr); library(readxl)
+library(moments); library(corrplot); library(pso);
+library(GPArotation); library(lavaan); library(scatterplot3d);
+library(corrplot);library(moments); library(psych)
+```
+
+
+```{r}
+diseasesdata<-  read.csv("Heart Disease Data Updated.csv")
+head(diseasesdata)
+dim(diseasesdata)
+diseasedata<-as.matrix(diseasesdata) 
+dis<-diseasesdata[,-c(2:15)]
+head(dis)
+```
+
+```{r}
+#Response variables analysis
+cordis<- cor(dis)
+cordis
+corrplot(cordis, order = "hclust")
+```
+
+```{r}
+#Eigen values
+eigen(cordis)
+eigenvalues <- eigen(cordis)$values
+eigenvalues
+plot(eigenvalues,type="b")
+cordei<- eigen(cordis)$vectors
+cordei
+#Kaiser's criterion: retain 1  factors
+sum(eigen(cordis)$values>1.0)
+#Joliffe's criterion: retain 3 factors. Huge difference between the number of clusters each criterion suggests.
+sum(eigen(cordis)$values>0.7)
+#Inflection point
+plot(eigenvalues,type="b")
+#The intrinsic dimensionality is 1 clusters as the inflection point is the second point from the left of the graph
+```
+
+
+```{r}
+#reduced matrix of eigen values
+cods<- diag(eigen(cordis)$values[1:3])
+head(cods)
+#unrotated matrix
+cosa <-cordei %*% sqrt(cods)
+head(cosa)
+
+dob <- solve(cordis)%*% cosa
+head(dob)
+coz <-scale(dis)
+head(coz)
+fdis <- coz%*%dob
+head(fdis)
+
+ #unrotated matrix for one factor(Kaisser and Scree Plot)
+roai1 <-pca(r=cordis, nfactors=1, rotate = "none")$loadings[]
+roai1
+corrplot(roai1)    #visualize the loadings on each factor
+
+#let's check for any complex dimensions
+
+which(rowSums(abs(roai1)>.3)>=2)
+#no complexity!
+
+roai1vx<-pca(r=cordis, nfactors=1,rotate="varimax")$loading[] #orthogonal varimax rotation
+roai1vx
+#No need for a varimax rotation, there is no complexity
+
+#let's check for any remaining complexities
+which(rowSums(abs(roai1vx)>.3)>=2)
+
+#There are no remaining complexities 
+
+ #unrotated matrix for three factors (Jollife)
+roai3<-pca(r=cordis, nfactors=3, rotate = "none")$loadings[]
+roai3
+corrplot(roai3)    #visualize the loadings on each factor
+
+#let's check for any complex dimensions
+
+which(rowSums(abs(roai3)>.3)>=2)
+#All the 3 dimensions are complex.
+
+roai3vx<-pca(r=cordis, nfactors=3,rotate="varimax")$loading[] #orthogonal varimax rotation
+roai3vx
+
+#let's check for any remaining complexities
+which(rowSums(abs(roai3vx)>.3)>=2)
+#All the complexities have been removed.The varimax rotation was successful.
+```
+
+#3 Let's try optimal oblique rotation and it is it necessary?
+```{r}
+#based on Kaiser and Scree Plot's criterion
+pca(r=cordis, nfactors=1,rotate="oblimin")
+oblicordis<-pca(r=cordis, nfactors=1,rotate="oblimin")$loading[] #oblique varimax rotation
+oblicordis
+#40% of the data was retained
+
+which(rowSums(abs(oblicordis)>.3)>=2)
+#After oblique rotation, there are no complexities. This rotation was successful.
+
+#based on Jolliffe's criterion
+pca(r=cordis, nfactors=3,rotate="oblimin")
+oblicordis2<-pca(r=cordis, nfactors=3,rotate="oblimin")$loading[] #oblique varimax rotation
+oblicordis2
+#100% of the data was retained
+
+which(rowSums(abs(oblicordis2)>.3)>=2)
+#After oblique rotation, there are no complexities. This rotation was successful.
+
+#The oblique rotation is not going to be used for this factor analysis because the correlation between factors is less 0.3 and this is not a significant correlation for us to use. 
+#Therefore orthogonal rotation will be the best used going forward.
+```
+
+#summarize and interpret variance
+```{r}
+#Based on the analysis above, we select orthogonal rotation based on inflection point criterion because it leaves us with the lowest number of complex dimensions.
+
+#Kaiser and Scree Plot
+pca(r=cordis, nfactors=1,rotate="varimax") 
+
+#Here's the variance in our data that was retained in each row :
+# 50% in Heart Disease
+# 43% in Kidney Disease
+# 27% in Skin Cancer
+# 40% of variability of data is accounted for the one factor therefore, we've lost around 60% of our data which is beyond the acceptable threshold.
+
+#Joliffe
+pca(r=cordis, nfactors=3,rotate="varimax") 
+
+#Here's the variance in our data that was retained in each row :
+# 100% in Heart Disease
+# 100% in Kidney Disease
+# 100% in Skin Cancer
+# 33% of variability of data is accounted for by each of the three factors therefore, we've lost around 1% of our data which is within the acceptable threshold.
+
+```
+
+
+```{r}
+#Analysis of variance and communality based on other criteria.
+
+#Kaiser and scree plot's
+pca(r=cordis,nfactors=1, rotate="none")
+
+#the single factor retains 40% of the original data (variance)
+
+#jolliffe's 
+pca(r=cordis,nfactors=3, rotate="none")
+#the 3 factors retain 100% of the original data, which is actually impressive (variance)
+
+```
+
+
+#Predictors
+
+```{r}
+#Predictor variables analysis
+
+predictordata<-diseasedata[,-c(1,16,17)]
+head(predictordata)
+dim(predictordata)
+R<-cor(predictordata)
+corrplot(R)
+
+#Eigen values
+eigen(cor(predictordata))$values
+
+#Kaiser's criterion: retain 4  factors
+#Joliffe's criterion: retain 11 factors. Huge difference between the number of clusters each criterion suggests.
+#Inflection point
+
+eigenvalue<-c(2.6609413,1.3914757,1.1550720,1.1052597,0.9739275,0.9471217,0.9050526,0.8756531,0.8292909,0.7852854,0.7365916,0.5897894,0.5695995,0.4749396)
+
+plot(eigenvalue,type="b")
+
+#The intrinsic dimensionality is 2 clusters as the inflection point is the third point from the left of the graph
+```
+```{r}
+#We decided to go with the number of factors between what Kaiser ,which had 4, and Joliffee, which had 11, suggest. We decided to retain 8 factors.
+
+chosenmatrix<-pca(r=R,nfactors=8, rotate="none")$loadings[]   #unrotated matrix
+chosenmatrix
+
+corrplot(chosenmatrix)    #visualize the loadings on each factor
+
+#let's check for any complex dimensions
+
+which(rowSums(abs(chosenmatrix)>.3)>=2)
+#We have 10 complex dimensions: BMI, Smoking, AlcoholDrinking, Stroke,Mental health, Sex,average age, physical activity, sleep time, and asthma are complex dimensions
+
+rotatematrix<-pca(r=R, nfactors=8,rotate="varimax")$loading[] #orthogonal varimax rotation
+rotatematrix
+
+#let's check for any remaining complexities
+which(rowSums(abs(rotatematrix)>.3)>=2)
+#after varimax rotation, there still remains complexity for 2 dimensions only: Smoking and mental health. It is also important to note that all dimensions load significantly on at least one factor.
+
+#let's try oblique rotation now.
+obliquerotatematrix<-pca(r=R, nfactors=8,rotate="oblimin")$loading[]#oblique rotation
+obliquerotatematrix
+
+#let's check for any remaining complexities
+which(rowSums(abs(obliquerotatematrix)>.3)>=2)
+#after oblique rotation there still remains complexity for smoking and mental health. Do we need to do oblique rotation though?
+
+pca(r=R, nfactors=8,rotate="oblimin")
+#oblique rotation was not necessary for rotation because none of the factors have a correlation greater than .3. So we'll go 
+
+pca(r=R,nfactors=8, rotate="varimax")
+
+#Communality& variance discussion
+
+#The 8 factors retained 72% of the variability of the original data, so we lost 28% of our data which is not concerning. Most of the dimensions did not lose more than 30% of the variability of the original data. 3 dimensions are worth our attention: Diabetic lost approximately 45.2% of the original dimension data, physical activity lost approximately 57.2% of the original dimension, and GenHealth lost 40.3% of the original dimension data.
+
+```
+

@@ -1,0 +1,122 @@
+---
+title: "Structural Equation Model"
+author: "Kate Sebaganji, Ndeh Awasum, Karen Vuong"
+date: '2023-05-03'
+output: html_document
+---
+
+
+```{r}
+if(!require(installr)) {
+  install.packages("installr"); 
+  require(installr)}
+```
+
+
+```{r}
+library(rmarkdown); library(knitr); library(readxl)
+library(moments); library(corrplot); library(pso)
+library(psych); library(GPArotation); library(lavaan); library(scatterplot3d);library(corrplot);library(moments)
+```
+
+
+```{r}
+diseasesdata<-read.csv("Heart Disease Data Updated.csv")
+dim(diseasesdata)
+head(diseasesdata)
+
+diseasedata<-as.matrix(diseasesdata)      
+```
+
+```{r}
+covdis<- cov(diseasedata)
+covdis
+```
+
+```{r}
+
+#edits: i removed response variables from measurement model and added factors to the structural model
+diseqn <- '
+        # Measurement Model 
+        
+        Wellbeing =~ PhysicalHealth  + GenHealth + DiffWalking + PhysicalActivity 
+        Weight =~ BMI + Diabetic
+
+        # Measurement Model (Covariance Specification)
+        Smoking ~~ AlcoholDrinking
+        Smoking ~~ Sex
+        Wellbeing ~~ MentalHealth
+        MentalHealth ~~ Average.Age
+
+        # Structural Model
+        HeartDisease ~ Asthma + Stroke + Sex + SleepTime +Smoking + AlcoholDrinking + MentalHealth + Average.Age + Weight + Wellbeing
+        KidneyDisease ~ Asthma + Stroke + Sex + SleepTime +Smoking + AlcoholDrinking + MentalHealth + Average.Age + Weight + Wellbeing
+        SkinCancer ~ Asthma + Stroke + Sex + SleepTime +Smoking + AlcoholDrinking + MentalHealth + Average.Age+           Weight + Wellbeing
+'
+dismod <- sem(diseqn, sample.cov = covdis, sample.nobs = 319795)
+dismod
+```
+```{r}
+#our model says we have 89 degrees of freedom
+
+#number of data point
+17*18/2
+
+#we have 153 data points and we calculated 57 paths/parameters that need to be estimated. So our degree of freedom would be 80 which is greater than 0.
+
+```
+#2. identify and discuss significant indicators of included multidimensional factors
+
+```{r}
+parameterEstimates(dismod)[1:40,]
+
+#wellbeing factor
+
+#physical health is the most significant contributor to the wellbeing factor - as physical health increases by 1 unit, wellbeing also increases by one unit. Of all the dimensions that load onto wellbeing, physical health has the highest magnitude followed by general health, diffwalking, and physical activity. All the dimensions loading onto wellbeing have a significant effect because their p-values are below 0.05. 
+
+#weight factor 
+
+#BMI is the most significant contributor to the weight factor. As BMI increases by 1 unit, Weight increases by 1 unit. Diabetic is also a significant contributor to the weight factor as its p-value is below the threshold (0.05) - as the chance of being diabetic increases by one unit, weight increases by 0.070 units.
+
+```
+#3.  identify and discuss significant predictors of response variables and factors
+```{r}
+parameterEstimates(dismod)[11:40,]
+
+#heart disease
+
+#Of all the predictor variables for heart disease, stroke has the greatest magnitude of 0.192. This means that as the stroke occurrence increases by 1 unit, the chance of getting a heart disease increases by 0.192 units. In descending order of magnitude, the predictor variables for heart disease are as follows: stroke, sex, smoking, asthma,  alcohol drinking, wellbeing, weight, average age, sleep time, mental health. All the predictor variables for heart disease have a significant effect because their p-values are all less than 0.05.
+
+#skin cancer
+
+#Of all the predictor variables for skin cancer, sex has the greatest magnitude of -.021. Our interpretation is that being female instead of male leads to a 0.021 units decrease in the chance of having a skin cancer. In descending order of magnitude, the predictor variables for skin cancer are as follows: sex, stroke, asthma, weight,alcohol drinking, smoking,average age, sleep time, wellbeing, mental health. All the predictor variables for skin cancer have a significant effect because their p-values are all less than 0.05.
+
+#kidney disease
+
+#Of all the predictor variables for Kidney disease, Stroke has the greatest magnitude of 0.044. This means that for every stroke occurrence there is a 0.044 increase in the chance of acquiring a kidney disease. In descending order of magnitude, the following predictor variables affect Kidney disease as follows; stroke, weight, alcohol drinking, Asthma, wellbeing, smoking, sex, sleep time and average age, and mental health. All the predictor variables for kidney disease have a significant effect because their p-values are all less than 0.05.
+
+```
+#4 describe practical significance of estimated model parameters- which is significant in magnitude?
+
+```{r}
+
+#All the predictor variables for heart disease,kidney disease, and skin cancer are stastistically  significant because their p-values are less than the threshold value - 0.05. With this, stroke has the most significant effect on kidney disease and heart disease because of the magnitudes of the regression coefficients. Sex has the most significant effect on skin cancer because of its regression coefficient. 
+
+
+#This means that for every stroke occurrence there is a 0.044 increase in the chance of acquiring kidney disease
+
+#Being female instead of male leads to a 0.021 units decrease in the chance of having a skin cancer
+
+#as the stroke occurrence increases by 1 unit, the chance of getting a heart disease increases by 0.192 units
+
+```
+
+
+#5 summarize and interpret model fit
+```{r}
+fitMeasures(dismod)
+
+#cfi, mfi, nnfi, rmsea, mfi, aic interpretation
+```
+
+

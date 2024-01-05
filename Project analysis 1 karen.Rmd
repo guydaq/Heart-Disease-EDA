@@ -1,0 +1,1777 @@
+---
+title: "Project Part 1"
+output: html_document
+date: "2023-02-28"
+---
+
+```{r}
+if(!require(installr)) {
+  install.packages("installr"); 
+  require(installr)}
+```
+
+
+```{r}
+install.packages("rmarkdown")
+install.packages("knitr")
+install.packages("readxl")
+install.packages("moments")
+install.packages("corrplot")
+install.packages("pso")
+install.packages("psych")
+install.packages("GPArotation")
+install.packages("lavaan")
+install.packages("scatterplot3d")
+install.packages("corrplot")
+install.packages("rgl")
+install.packages("moments")
+
+
+library(rmarkdown); library(knitr); library(readxl)
+library(moments); library(corrplot); library(pso)
+library(psych); library(GPArotation); library(lavaan); library(scatterplot3d);library(corrplot);library(rgl);library(moments)
+```
+
+
+```{r}
+diseasesdata<-  read.csv("Heart Disease Data Updated.csv")
+View(diseasesdata)
+View(diseasesdata)
+dim(diseasesdata)
+diseasesdata
+
+diseasedata<-as.matrix(diseasesdata)      
+```
+
+```{r}
+#1. Manipulated data
+#Yes/No- write them all down (tonight)
+```
+
+
+```{r}
+#1 D evaluation 
+apply(X = diseasedata, MARGIN = 2, FUN = mean)
+apply(X = diseasedata, MARGIN = 2, FUN = sd)
+apply(X = diseasedata, MARGIN = 2, FUN = var)
+apply(X = diseasedata, MARGIN = 2, FUN = skewness)
+apply(X = diseasedata, MARGIN = 2, FUN = kurtosis)
+apply(X = diseasedata, MARGIN = 2, FUN = hist)
+which(abs(scale(diseasedata))>qnorm(1-0.0001/2))
+
+
+#don't check outliers for columns with binary entries only
+```
+
+```{r}
+#2D Eval for Skin Cancer
+
+#The 2D evaluation is based off variables that appeared to be more normal than the others
+#Variables that were closer to zero in skewness and closer to 3 in terms of kurtosis were used for the analysis below
+
+plot(diseasedata[,3], diseasedata[,17], pch = 16, xlab = "Smoking",  
+     ylab = "Skin Cancer")
+cov(diseasedata[,3],diseasedata[,17])
+cor(diseasedata[,3],diseasedata[,17])
+
+plot(diseasedata[,10], diseasedata[,17], pch = 16, xlab = "Average Age",  
+     ylab = "Skin Cancer")
+cov(diseasedata[,10],diseasedata[,17])
+cor(diseasedata[,10],diseasedata[,17])
+
+plot(diseasedata[,12], diseasedata[,17], pch = 16, xlab = "Physical Activity",  
+     ylab = "Skin Cancer")
+cov(diseasedata[,12],diseasedata[,17])
+cor(diseasedata[,12],diseasedata[,17])
+
+plot(diseasedata[,13], diseasedata[,17], pch = 16, xlab = "General Health",  
+     ylab = "Skin Cancer")
+cov(diseasedata[,13],diseasedata[,17])
+cor(diseasedata[,13],diseasedata[,17])
+
+plot(diseasedata[,2], diseasedata[,17], pch = 16, xlab = "BMI",  
+     ylab = "Skin Cancer")
+cov(diseasedata[,2],diseasedata[,17])
+cor(diseasedata[,2],diseasedata[,17])
+
+plot(diseasedata[,4], diseasedata[,17], pch = 16, xlab = "Alcohol Drinking",  
+     ylab = "Skin Cancer")
+cov(diseasedata[,4],diseasedata[,17])
+cor(diseasedata[,4],diseasedata[,17])
+
+plot(diseasedata[,5], diseasedata[,17], pch = 16, xlab = "Stroke",  
+     ylab = "Skin Cancer")
+cov(diseasedata[,5],diseasedata[,17])
+cor(diseasedata[,5],diseasedata[,17])
+
+plot(diseasedata[,6], diseasedata[,17], pch = 16, xlab = "Physical Health",  
+     ylab = "Skin Cancer")
+cov(diseasedata[,6],diseasedata[,17])
+cor(diseasedata[,6],diseasedata[,17])
+
+plot(diseasedata[,7], diseasedata[,17], pch = 16, xlab = "Mental Health",  
+     ylab = "Skin Cancer")
+cov(diseasedata[,7],diseasedata[,17])
+cor(diseasedata[,7],diseasedata[,17])
+
+plot(diseasedata[,8], diseasedata[,17], pch = 16, xlab = "DiffWalking",  
+     ylab = "Skin Cancer")
+cov(diseasedata[,8],diseasedata[,17])
+cor(diseasedata[,8],diseasedata[,17])
+
+plot(diseasedata[,9], diseasedata[,17], pch = 16, xlab = "Sex",  
+     ylab = "Skin Cancer")
+cov(diseasedata[,9],diseasedata[,17])
+cor(diseasedata[,9],diseasedata[,17])
+
+plot(diseasedata[,11], diseasedata[,17], pch = 16, xlab = "Diabetic",  
+     ylab = "Skin Cancer")
+cov(diseasedata[,11],diseasedata[,17])
+cor(diseasedata[,11],diseasedata[,17])
+
+plot(diseasedata[,14], diseasedata[,17], pch = 16, xlab = "Sleep Time",  
+     ylab = "Skin Cancer")
+cov(diseasedata[,14],diseasedata[,17])
+cor(diseasedata[,14],diseasedata[,17])
+
+plot(diseasedata[,15], diseasedata[,17], pch = 16, xlab = "Asthma",  
+     ylab = "Skin Cancer")
+cov(diseasedata[,15],diseasedata[,17])
+cor(diseasedata[,15],diseasedata[,17])
+
+```
+
+
+
+```{r}
+#2D Eval for heart disease
+
+#The 2D evaluation is based off variables that appeared to be more normal than the others
+#Variables that were closer to zero in skewness and closer to 3 in terms of kurtosis were used for the analysis below
+
+plot(diseasedata[,3], diseasedata[,1], pch = 16, xlab = "Smoking",  
+     ylab = "Heart disease")
+cov(diseasedata[,3],diseasedata[,1])
+cor(diseasedata[,3],diseasedata[,1])
+
+plot(diseasedata[,10], diseasedata[,1], pch = 16, xlab = "Average Age",  
+     ylab = "Heart disease")
+cov(diseasedata[,10],diseasedata[,1])
+cor(diseasedata[,10],diseasedata[,1])
+
+plot(diseasedata[,12], diseasedata[,1], pch = 16, xlab = "Physical Activity",  
+     ylab = "Heart disease")
+cov(diseasedata[,12],diseasedata[,1])
+cor(diseasedata[,12],diseasedata[,1])
+
+plot(diseasedata[,13], diseasedata[,1], pch = 16, xlab = "General Health",  
+     ylab = "Heart disease")
+cov(diseasedata[,13],diseasedata[,1])
+cor(diseasedata[,13],diseasedata[,1])
+
+plot(diseasedata[,2], diseasedata[,1], pch = 16, xlab = "BMI",  
+     ylab = "Heart disease")
+cov(diseasedata[,2],diseasedata[,1])
+cor(diseasedata[,2],diseasedata[,1])
+
+plot(diseasedata[,4], diseasedata[,1], pch = 16, xlab = "Alcohol Drinking",  
+     ylab = "Heart disease")
+cov(diseasedata[,4],diseasedata[,1])
+cor(diseasedata[,4],diseasedata[,1])
+
+plot(diseasedata[,5], diseasedata[,1], pch = 16, xlab = "Stroke",  
+     ylab = "Heart disease")
+cov(diseasedata[,5],diseasedata[,1])
+cor(diseasedata[,5],diseasedata[,1])
+
+plot(diseasedata[,6], diseasedata[,1], pch = 16, xlab = "Physical Health",  
+     ylab = "Heart disease")
+cov(diseasedata[,6],diseasedata[,1])
+cor(diseasedata[,6],diseasedata[,1])
+
+plot(diseasedata[,7], diseasedata[,1], pch = 16, xlab = "Mental Health",  
+     ylab = "Heart disease")
+cov(diseasedata[,7],diseasedata[,1])
+cor(diseasedata[,7],diseasedata[,1])
+
+plot(diseasedata[,8], diseasedata[,1], pch = 16, xlab = "DiffWalking",  
+     ylab = "Heart disease")
+cov(diseasedata[,8],diseasedata[,1])
+cor(diseasedata[,8],diseasedata[,1])
+
+plot(diseasedata[,9], diseasedata[,1], pch = 16, xlab = "Sex",  
+     ylab = "Heart disease")
+cov(diseasedata[,9],diseasedata[,1])
+cor(diseasedata[,9],diseasedata[,1])
+
+plot(diseasedata[,11], diseasedata[,1], pch = 16, xlab = "Diabetic",  
+     ylab = "Heart disease")
+cov(diseasedata[,11],diseasedata[,1])
+cor(diseasedata[,11],diseasedata[,1])
+
+plot(diseasedata[,14], diseasedata[,1], pch = 16, xlab = "Sleep Time",  
+     ylab = "Heart disease")
+cov(diseasedata[,14],diseasedata[,1])
+cor(diseasedata[,14],diseasedata[,1])
+
+plot(diseasedata[,15], diseasedata[,1], pch = 16, xlab = "Asthma",  
+     ylab = "Heart disease")
+cov(diseasedata[,15],diseasedata[,1])
+cor(diseasedata[,15],diseasedata[,1])
+
+```
+
+
+
+```{r}
+#2D Eval for kidney cancer
+
+#The 2D evaluation is based off variables that appeared to be more normal than the others
+#Variables that were closer to zero in skewness and closer to 3 in terms of kurtosis were used for the analysis below
+
+plot(diseasedata[,3], diseasedata[,16], pch = 16, xlab = "Smoking",  
+     ylab = "Kidney Cancer")
+cov(diseasedata[,3],diseasedata[,16])
+cor(diseasedata[,3],diseasedata[,16])
+
+plot(diseasedata[,9], diseasedata[,16], pch = 16, xlab = "Sex",  
+     ylab = "Kidney Cancer")
+cov(diseasedata[,9],diseasedata[,16])
+cor(diseasedata[,9],diseasedata[,16])
+
+plot(diseasedata[,10], diseasedata[,16], pch = 16, xlab = "Average Age",  
+     ylab = "Kidney Cancer")
+cov(diseasedata[,10],diseasedata[,16])
+cor(diseasedata[,10],diseasedata[,16])
+
+plot(diseasedata[,12], diseasedata[,16], pch = 16, xlab = "Physical Activity",  
+     ylab = "Kidney Cancer")
+cov(diseasedata[,12],diseasedata[,16])
+cor(diseasedata[,12],diseasedata[,16])
+
+plot(diseasedata[,13], diseasedata[,16], pch = 16, xlab = "General Health",  
+     ylab = "Kidney Cancer")
+cov(diseasedata[,13],diseasedata[,16])
+cor(diseasedata[,13],diseasedata[,16])
+
+plot(diseasedata[,2], diseasedata[,16], pch = 16, xlab = "BMI",  
+     ylab = "Kidney Cancer")
+cov(diseasedata[,2],diseasedata[,16])
+cor(diseasedata[,2],diseasedata[,16])
+
+plot(diseasedata[,4], diseasedata[,16], pch = 16, xlab = "Alcohol Drinking",  
+     ylab = "Kidney Cancer")
+cov(diseasedata[,4],diseasedata[,16])
+cor(diseasedata[,4],diseasedata[,16])
+
+plot(diseasedata[,5], diseasedata[,16], pch = 16, xlab = "Stroke",  
+     ylab = "Kidney Cancer")
+cov(diseasedata[,5],diseasedata[,16])
+cor(diseasedata[,5],diseasedata[,16])
+
+plot(diseasedata[,6], diseasedata[,16], pch = 16, xlab = "Physical Health",  
+     ylab = "Kidney Cancer")
+cov(diseasedata[,6],diseasedata[,16])
+cor(diseasedata[,6],diseasedata[,16])
+
+plot(diseasedata[,7], diseasedata[,16], pch = 16, xlab = "Mental Health",  
+     ylab = "Kidney Cancer")
+cov(diseasedata[,7],diseasedata[,16])
+cor(diseasedata[,7],diseasedata[,16])
+
+plot(diseasedata[,8], diseasedata[,16], pch = 16, xlab = "DiffWalking",  
+     ylab = "Kidney Cancer")
+cov(diseasedata[,8],diseasedata[,16])
+cor(diseasedata[,8],diseasedata[,16])
+
+
+plot(diseasedata[,11], diseasedata[,16], pch = 16, xlab = "Diabetic",  
+     ylab = "Kidney Cancer")
+cov(diseasedata[,11],diseasedata[,16])
+cor(diseasedata[,11],diseasedata[,16])
+
+plot(diseasedata[,14], diseasedata[,16], pch = 16, xlab = "Sleep Time",  
+     ylab = "Kidney Cancer")
+cov(diseasedata[,14],diseasedata[,16])
+cor(diseasedata[,14],diseasedata[,16])
+
+plot(diseasedata[,15], diseasedata[,16], pch = 16, xlab = "Asthma",ylab = "Kidney Cancer")
+cov(diseasedata[,15],diseasedata[,16])
+cor(diseasedata[,15],diseasedata[,16])
+
+```
+
+```{r}
+#2D evaluation of input variables
+#BMI
+
+plot(diseasedata[,1], diseasedata[,2], pch = 16, xlab = "Heart Disease",  
+     ylab = "BMI")
+cov(diseasedata[,1],diseasedata[,2])
+cor(diseasedata[,1],diseasedata[,2])
+
+plot(diseasedata[,16], diseasedata[,2], pch = 16, xlab = "Kidney Cancer",  
+     ylab = "BMI")
+cov(diseasedata[,16],diseasedata[,2])
+cor(diseasedata[,16],diseasedata[,2])
+
+plot(diseasedata[,17], diseasedata[,2], pch = 16, xlab = "Skin Cancer",  
+     ylab = "BMI")
+cov(diseasedata[,17],diseasedata[,2])
+cor(diseasedata[,17],diseasedata[,2])
+
+
+plot(diseasedata[,3], diseasedata[,2], pch = 16, xlab = "Smoking",  
+     ylab = "BMI")
+cov(diseasedata[,3],diseasedata[,2])
+cor(diseasedata[,3],diseasedata[,2])
+
+
+plot(diseasedata[,10], diseasedata[,2], pch = 16, xlab = "Average Age",  
+     ylab = "BMI")
+cov(diseasedata[,10],diseasedata[,2])
+cor(diseasedata[,10],diseasedata[,2])
+
+plot(diseasedata[,12], diseasedata[,2], pch = 16, xlab = "Physical Activity",  
+     ylab = "BMI")
+cov(diseasedata[,12],diseasedata[,2])
+cor(diseasedata[,12],diseasedata[,2])
+
+plot(diseasedata[,13], diseasedata[,2], pch = 16, xlab = "General Health",  
+     ylab = "BMI")
+cov(diseasedata[,13],diseasedata[,2])
+cor(diseasedata[,13],diseasedata[,2])
+
+plot(diseasedata[,2], diseasedata[,2], pch = 16, xlab = "BMI",  
+     ylab = "BMI")
+cov(diseasedata[,2],diseasedata[,2])
+cor(diseasedata[,2],diseasedata[,2])
+
+plot(diseasedata[,4], diseasedata[,2], pch = 16, xlab = "Alcohol Drinking",  
+     ylab = "BMI")
+cov(diseasedata[,4],diseasedata[,2])
+cor(diseasedata[,4],diseasedata[,2])
+
+plot(diseasedata[,5], diseasedata[,2], pch = 16, xlab = "Stroke",  
+     ylab = "BMI")
+cov(diseasedata[,5],diseasedata[,2])
+cor(diseasedata[,5],diseasedata[,2])
+
+plot(diseasedata[,6], diseasedata[,2], pch = 16, xlab = "Physical Health",  
+     ylab = "BMI")
+cov(diseasedata[,6],diseasedata[,2])
+cor(diseasedata[,6],diseasedata[,2])
+
+plot(diseasedata[,7], diseasedata[,2], pch = 16, xlab = "Mental Health",  
+     ylab = "BMI")
+cov(diseasedata[,7],diseasedata[,2])
+cor(diseasedata[,7],diseasedata[,2])
+
+plot(diseasedata[,8], diseasedata[,2], pch = 16, xlab = "DiffWalking",  
+     ylab = "BMI")
+cov(diseasedata[,8],diseasedata[,2])
+cor(diseasedata[,8],diseasedata[,2])
+
+plot(diseasedata[,9], diseasedata[,2], pch = 16, xlab = "Sex",  
+     ylab = "BMI")
+cov(diseasedata[,9],diseasedata[,2])
+cor(diseasedata[,9],diseasedata[,2])
+
+plot(diseasedata[,11], diseasedata[,2], pch = 16, xlab = "Diabetic",  
+     ylab = "BMI")
+cov(diseasedata[,11],diseasedata[,2])
+cor(diseasedata[,11],diseasedata[,2])
+
+plot(diseasedata[,14], diseasedata[,2], pch = 16, xlab = "Sleep Time",  
+     ylab = "BMI")
+cov(diseasedata[,14],diseasedata[,2])
+cor(diseasedata[,14],diseasedata[,2])
+
+plot(diseasedata[,15], diseasedata[,2], pch = 16, xlab = "Asthma",  
+     ylab = "BMI")
+cov(diseasedata[,15],diseasedata[,2])
+cor(diseasedata[,15],diseasedata[,2])
+```
+
+```{r}
+#Smoking
+
+
+plot(diseasedata[,1], diseasedata[,3], pch = 16, xlab = "Heart Disease",  
+     ylab = "Smoking")
+cov(diseasedata[,1],diseasedata[,3])
+cor(diseasedata[,1],diseasedata[,3])
+
+plot(diseasedata[,16], diseasedata[,3], pch = 16, xlab = "Kidney Cancer",  
+     ylab = "Smoking")
+cov(diseasedata[,16],diseasedata[,3])
+cor(diseasedata[,16],diseasedata[,3])
+
+plot(diseasedata[,17], diseasedata[,3], pch = 16, xlab = "Skin Cancer",  
+     ylab = "Smoking")
+cov(diseasedata[,17],diseasedata[,3])
+cor(diseasedata[,17],diseasedata[,3])
+
+
+plot(diseasedata[,2], diseasedata[,3], pch = 16, xlab = "BMI",  
+     ylab = "Smoking")
+cov(diseasedata[,2],diseasedata[,3])
+cor(diseasedata[,2],diseasedata[,3])
+
+
+plot(diseasedata[,10], diseasedata[,3], pch = 16, xlab = "Average Age",  
+     ylab = "Smoking")
+cov(diseasedata[,10],diseasedata[,3])
+cor(diseasedata[,10],diseasedata[,3])
+
+plot(diseasedata[,12], diseasedata[,3], pch = 16, xlab = "Physical Activity",  
+     ylab = "Smoking")
+cov(diseasedata[,12],diseasedata[,3])
+cor(diseasedata[,12],diseasedata[,3])
+
+plot(diseasedata[,13], diseasedata[,3], pch = 16, xlab = "General Health",  
+     ylab = "Smoking")
+cov(diseasedata[,13],diseasedata[,3])
+cor(diseasedata[,13],diseasedata[,3])
+
+plot(diseasedata[,3], diseasedata[,3], pch = 16, xlab = "Smoking",  
+     ylab = "Smoking")
+cov(diseasedata[,3],diseasedata[,3])
+cor(diseasedata[,3],diseasedata[,3])
+
+plot(diseasedata[,4], diseasedata[,3], pch = 16, xlab = "Alcohol Drinking",  
+     ylab = "Smoking")
+cov(diseasedata[,4],diseasedata[,3])
+cor(diseasedata[,4],diseasedata[,3])
+
+plot(diseasedata[,5], diseasedata[,3], pch = 16, xlab = "Stroke",  
+     ylab = "Smoking")
+cov(diseasedata[,5],diseasedata[,3])
+cor(diseasedata[,5],diseasedata[,3])
+
+plot(diseasedata[,6], diseasedata[,3], pch = 16, xlab = "Physical Health",  
+     ylab = "Smoking")
+cov(diseasedata[,6],diseasedata[,3])
+cor(diseasedata[,6],diseasedata[,3])
+
+plot(diseasedata[,7], diseasedata[,3], pch = 16, xlab = "Mental Health",  
+     ylab = "Smoking")
+cov(diseasedata[,7],diseasedata[,3])
+cor(diseasedata[,7],diseasedata[,3])
+
+plot(diseasedata[,8], diseasedata[,3], pch = 16, xlab = "DiffWalking",  
+     ylab = "Smoking")
+cov(diseasedata[,8],diseasedata[,3])
+cor(diseasedata[,8],diseasedata[,3])
+
+plot(diseasedata[,9], diseasedata[,3], pch = 16, xlab = "Sex",  
+     ylab = "Smoking")
+cov(diseasedata[,9],diseasedata[,3])
+cor(diseasedata[,9],diseasedata[,3])
+
+plot(diseasedata[,11], diseasedata[,3], pch = 16, xlab = "Diabetic",  
+     ylab = "Smoking")
+cov(diseasedata[,11],diseasedata[,3])
+cor(diseasedata[,11],diseasedata[,3])
+
+plot(diseasedata[,14], diseasedata[,3], pch = 16, xlab = "Sleep Time",  
+     ylab = "Smoking")
+cov(diseasedata[,14],diseasedata[,3])
+cor(diseasedata[,14],diseasedata[,3])
+
+plot(diseasedata[,15], diseasedata[,3], pch = 16, xlab = "Asthma",  
+     ylab = "Smoking")
+cov(diseasedata[,15],diseasedata[,3])
+cor(diseasedata[,15],diseasedata[,3])
+
+```
+
+```{r}
+#Alcohol Drinking
+
+plot(diseasedata[,1], diseasedata[,4], pch = 16, xlab = "Heart Disease",  
+     ylab = "Alcohol Drinking")
+cov(diseasedata[,1],diseasedata[,4])
+cor(diseasedata[,1],diseasedata[,4])
+
+plot(diseasedata[,16], diseasedata[,4], pch = 16, xlab = "Kidney Cancer",  
+     ylab = "Alcohol Drinking")
+cov(diseasedata[,16],diseasedata[,4])
+cor(diseasedata[,16],diseasedata[,4])
+
+plot(diseasedata[,17], diseasedata[,4], pch = 16, xlab = "Skin Cancer",  
+     ylab = "Alcohol Drinking")
+cov(diseasedata[,17],diseasedata[,4])
+cor(diseasedata[,17],diseasedata[,4])
+
+
+plot(diseasedata[,4], diseasedata[,4], pch = 16, xlab = "Alcohol Drinking",  
+     ylab = "Alcohol Drinking")
+cov(diseasedata[,4],diseasedata[,4])
+cor(diseasedata[,4],diseasedata[,4])
+
+
+plot(diseasedata[,10], diseasedata[,4], pch = 16, xlab = "Average Age",  
+     ylab = "Alcohol Drinking")
+cov(diseasedata[,10],diseasedata[,4])
+cor(diseasedata[,10],diseasedata[,4])
+
+plot(diseasedata[,12], diseasedata[,4], pch = 16, xlab = "Physical Activity",  
+     ylab = "Alcohol Drinking")
+cov(diseasedata[,12],diseasedata[,4])
+cor(diseasedata[,12],diseasedata[,4])
+
+plot(diseasedata[,13], diseasedata[,4], pch = 16, xlab = "General Health",  
+     ylab = "Alcohol Drinking")
+cov(diseasedata[,13],diseasedata[,4])
+cor(diseasedata[,13],diseasedata[,4])
+
+plot(diseasedata[,2], diseasedata[,4], pch = 16, xlab = "BMI",  
+     ylab = "Alcohol Drinking")
+cov(diseasedata[,2],diseasedata[,4])
+cor(diseasedata[,2],diseasedata[,4])
+
+plot(diseasedata[,3], diseasedata[,4], pch = 16, xlab = "Smoking",  
+     ylab = "Alcohol Drinking")
+cov(diseasedata[,3],diseasedata[,4])
+cor(diseasedata[,3],diseasedata[,4])
+
+plot(diseasedata[,5], diseasedata[,4], pch = 16, xlab = "Stroke",  
+     ylab = "Alcohol Drinking")
+cov(diseasedata[,5],diseasedata[,4])
+cor(diseasedata[,5],diseasedata[,4])
+
+plot(diseasedata[,6], diseasedata[,4], pch = 16, xlab = "Physical Health",  
+     ylab = "Alcohol Drinking")
+cov(diseasedata[,6],diseasedata[,4])
+cor(diseasedata[,6],diseasedata[,4])
+
+plot(diseasedata[,7], diseasedata[,4], pch = 16, xlab = "Mental Health",  
+     ylab = "Alcohol Drinking")
+cov(diseasedata[,7],diseasedata[,4])
+cor(diseasedata[,7],diseasedata[,4])
+
+plot(diseasedata[,8], diseasedata[,4], pch = 16, xlab = "DiffWalking",  
+     ylab = "Alcohol Drinking")
+cov(diseasedata[,8],diseasedata[,4])
+cor(diseasedata[,8],diseasedata[,4])
+
+plot(diseasedata[,9], diseasedata[,4], pch = 16, xlab = "Sex",  
+     ylab = "Alcohol Drinking")
+cov(diseasedata[,9],diseasedata[,4])
+cor(diseasedata[,9],diseasedata[,4])
+
+plot(diseasedata[,11], diseasedata[,4], pch = 16, xlab = "Diabetic",  
+     ylab = "Alcohol Drinking")
+cov(diseasedata[,11],diseasedata[,4])
+cor(diseasedata[,11],diseasedata[,4])
+
+plot(diseasedata[,14], diseasedata[,4], pch = 16, xlab = "Sleep Time",  
+     ylab = "Alcohol Drinking")
+cov(diseasedata[,14],diseasedata[,4])
+cor(diseasedata[,14],diseasedata[,4])
+
+plot(diseasedata[,15], diseasedata[,4], pch = 16, xlab = "Asthma",  
+     ylab = "Alcohol Drinking")
+cov(diseasedata[,15],diseasedata[,4])
+cor(diseasedata[,15],diseasedata[,4])
+
+```
+
+```{r}
+#Stroke
+
+plot(diseasedata[,1], diseasedata[,4], pch = 16, xlab = "Heart Disease",  
+     ylab = "Alcohol Drinking")
+cov(diseasedata[,1],diseasedata[,4])
+cor(diseasedata[,1],diseasedata[,4])
+
+plot(diseasedata[,16], diseasedata[,4], pch = 16, xlab = "Kidney Cancer",  
+     ylab = "Alcohol Drinking")
+cov(diseasedata[,16],diseasedata[,4])
+cor(diseasedata[,16],diseasedata[,4])
+
+plot(diseasedata[,17], diseasedata[,4], pch = 16, xlab = "Skin Cancer",  
+     ylab = "Alcohol Drinking")
+cov(diseasedata[,17],diseasedata[,4])
+cor(diseasedata[,17],diseasedata[,4])
+
+
+plot(diseasedata[,4], diseasedata[,4], pch = 16, xlab = "Alcohol Drinking",  
+     ylab = "Alcohol Drinking")
+cov(diseasedata[,4],diseasedata[,4])
+cor(diseasedata[,4],diseasedata[,4])
+
+
+plot(diseasedata[,10], diseasedata[,4], pch = 16, xlab = "Average Age",  
+     ylab = "Alcohol Drinking")
+cov(diseasedata[,10],diseasedata[,4])
+cor(diseasedata[,10],diseasedata[,4])
+
+plot(diseasedata[,12], diseasedata[,4], pch = 16, xlab = "Physical Activity",  
+     ylab = "Alcohol Drinking")
+cov(diseasedata[,12],diseasedata[,4])
+cor(diseasedata[,12],diseasedata[,4])
+
+plot(diseasedata[,13], diseasedata[,4], pch = 16, xlab = "General Health",  
+     ylab = "Alcohol Drinking")
+cov(diseasedata[,13],diseasedata[,4])
+cor(diseasedata[,13],diseasedata[,4])
+
+plot(diseasedata[,2], diseasedata[,4], pch = 16, xlab = "BMI",  
+     ylab = "Alcohol Drinking")
+cov(diseasedata[,2],diseasedata[,4])
+cor(diseasedata[,2],diseasedata[,4])
+
+plot(diseasedata[,3], diseasedata[,4], pch = 16, xlab = "Smoking",  
+     ylab = "Alcohol Drinking")
+cov(diseasedata[,3],diseasedata[,4])
+cor(diseasedata[,3],diseasedata[,4])
+
+plot(diseasedata[,4], diseasedata[,5], pch = 16, xlab = "Alcohol Drinking",  
+     ylab = "Stroke")
+cov(diseasedata[,4],diseasedata[,5])
+cor(diseasedata[,4],diseasedata[,5])
+
+plot(diseasedata[,6], diseasedata[,4], pch = 16, xlab = "Physical Health",  
+     ylab = "Alcohol Drinking")
+cov(diseasedata[,6],diseasedata[,4])
+cor(diseasedata[,6],diseasedata[,4])
+
+plot(diseasedata[,7], diseasedata[,4], pch = 16, xlab = "Mental Health",  
+     ylab = "Alcohol Drinking")
+cov(diseasedata[,7],diseasedata[,4])
+cor(diseasedata[,7],diseasedata[,4])
+
+plot(diseasedata[,8], diseasedata[,4], pch = 16, xlab = "DiffWalking",  
+     ylab = "Alcohol Drinking")
+cov(diseasedata[,8],diseasedata[,4])
+cor(diseasedata[,8],diseasedata[,4])
+
+plot(diseasedata[,9], diseasedata[,4], pch = 16, xlab = "Sex",  
+     ylab = "Alcohol Drinking")
+cov(diseasedata[,9],diseasedata[,4])
+cor(diseasedata[,9],diseasedata[,4])
+
+plot(diseasedata[,11], diseasedata[,4], pch = 16, xlab = "Diabetic",  
+     ylab = "Alcohol Drinking")
+cov(diseasedata[,11],diseasedata[,4])
+cor(diseasedata[,11],diseasedata[,4])
+
+plot(diseasedata[,14], diseasedata[,4], pch = 16, xlab = "Sleep Time",  
+     ylab = "Alcohol Drinking")
+cov(diseasedata[,14],diseasedata[,4])
+cor(diseasedata[,14],diseasedata[,4])
+
+plot(diseasedata[,15], diseasedata[,4], pch = 16, xlab = "Asthma",  
+     ylab = "Alcohol Drinking")
+cov(diseasedata[,15],diseasedata[,4])
+cor(diseasedata[,15],diseasedata[,4])
+
+```
+
+```{r}
+#Physical Health 
+
+plot(diseasedata[,1], diseasedata[,6], pch = 16, xlab = "Heart Disease",  
+     ylab = "Physical Health")
+cov(diseasedata[,1],diseasedata[,6])
+cor(diseasedata[,1],diseasedata[,6])
+
+plot(diseasedata[,16], diseasedata[,6], pch = 16, xlab = "Kidney Cancer",  
+     ylab = "Physical Health")
+cov(diseasedata[,16],diseasedata[,6])
+cor(diseasedata[,16],diseasedata[,6])
+
+plot(diseasedata[,17], diseasedata[,6], pch = 16, xlab = "Skin Cancer",  
+     ylab = "Physical Health")
+cov(diseasedata[,17],diseasedata[,6])
+cor(diseasedata[,17],diseasedata[,6])
+
+
+plot(diseasedata[,4], diseasedata[,6], pch = 16, xlab = "Alcohol Drinking",  
+     ylab = "Physical Health")
+cov(diseasedata[,4],diseasedata[,6])
+cor(diseasedata[,4],diseasedata[,6])
+
+
+plot(diseasedata[,10], diseasedata[,6], pch = 16, xlab = "Average Age",  
+     ylab = "Physical Health")
+cov(diseasedata[,10],diseasedata[,6])
+cor(diseasedata[,10],diseasedata[,6])
+
+plot(diseasedata[,12], diseasedata[,6], pch = 16, xlab = "Physical Activity",  
+     ylab = "Physical Health")
+cov(diseasedata[,12],diseasedata[,6])
+cor(diseasedata[,12],diseasedata[,6])
+
+plot(diseasedata[,13], diseasedata[,6], pch = 16, xlab = "General Health",  
+     ylab = "Physical Health")
+cov(diseasedata[,13],diseasedata[,6])
+cor(diseasedata[,13],diseasedata[,6])
+
+plot(diseasedata[,2], diseasedata[,6], pch = 16, xlab = "BMI",  
+     ylab = "Physical Health")
+cov(diseasedata[,2],diseasedata[,6])
+cor(diseasedata[,2],diseasedata[,6])
+
+plot(diseasedata[,3], diseasedata[,6], pch = 16, xlab = "Smoking",  
+     ylab = "Physical Health")
+cov(diseasedata[,3],diseasedata[,6])
+cor(diseasedata[,3],diseasedata[,6])
+
+plot(diseasedata[,5], diseasedata[,6], pch = 16, xlab = "Stroke",  
+     ylab = "Physical Health")
+cov(diseasedata[,5],diseasedata[,6])
+cor(diseasedata[,5],diseasedata[,6])
+
+plot(diseasedata[,6], diseasedata[,6], pch = 16, xlab = "Physical Health",  
+     ylab = "Physical Health")
+cov(diseasedata[,6],diseasedata[,6])
+cor(diseasedata[,6],diseasedata[,6])
+
+plot(diseasedata[,7], diseasedata[,6], pch = 16, xlab = "Mental Health",  
+     ylab = "Physical Health")
+cov(diseasedata[,7],diseasedata[,6])
+cor(diseasedata[,7],diseasedata[,6])
+
+plot(diseasedata[,8], diseasedata[,6], pch = 16, xlab = "DiffWalking",  
+     ylab = "Physical Health")
+cov(diseasedata[,8],diseasedata[,6])
+cor(diseasedata[,8],diseasedata[,6])
+
+plot(diseasedata[,9], diseasedata[,6], pch = 16, xlab = "Sex",  
+     ylab = "Physical Health")
+cov(diseasedata[,9],diseasedata[,6])
+cor(diseasedata[,9],diseasedata[,6])
+
+plot(diseasedata[,11], diseasedata[,6], pch = 16, xlab = "Diabetic",  
+     ylab = "Physical Health")
+cov(diseasedata[,11],diseasedata[,6])
+cor(diseasedata[,11],diseasedata[,6])
+
+plot(diseasedata[,14], diseasedata[,6], pch = 16, xlab = "Sleep Time",  
+     ylab = "Physical Health")
+cov(diseasedata[,14],diseasedata[,6])
+cor(diseasedata[,14],diseasedata[,6])
+
+plot(diseasedata[,15], diseasedata[,6], pch = 16, xlab = "Asthma",  
+     ylab = "Physical Health")
+cov(diseasedata[,15],diseasedata[,6])
+cor(diseasedata[,15],diseasedata[,6])
+```
+
+
+```{r}
+#Mental Health 
+
+plot(diseasedata[,1], diseasedata[,7], pch = 16, xlab = "Heart Disease",  
+     ylab = "Mental Health")
+cov(diseasedata[,1],diseasedata[,7])
+cor(diseasedata[,1],diseasedata[,7])
+
+plot(diseasedata[,16], diseasedata[,7], pch = 16, xlab = "Kidney Cancer",  
+     ylab = "Mental Health")
+cov(diseasedata[,16],diseasedata[,7])
+cor(diseasedata[,16],diseasedata[,7])
+
+plot(diseasedata[,17], diseasedata[,7], pch = 16, xlab = "Skin Cancer",  
+     ylab = "Mental Health")
+cov(diseasedata[,17],diseasedata[,7])
+cor(diseasedata[,17],diseasedata[,7])
+
+
+plot(diseasedata[,4], diseasedata[,7], pch = 16, xlab = "Alcohol Drinking",  
+     ylab = "Mental Health")
+cov(diseasedata[,4],diseasedata[,7])
+cor(diseasedata[,4],diseasedata[,7])
+
+
+plot(diseasedata[,10], diseasedata[,7], pch = 16, xlab = "Average Age",  
+     ylab = "Mental Health")
+cov(diseasedata[,10],diseasedata[,7])
+cor(diseasedata[,10],diseasedata[,7])
+
+plot(diseasedata[,12], diseasedata[,7], pch = 16, xlab = "Physical Activity",  
+     ylab = "Mental Health")
+cov(diseasedata[,12],diseasedata[,7])
+cor(diseasedata[,12],diseasedata[,7])
+
+plot(diseasedata[,13], diseasedata[,7], pch = 16, xlab = "General Health",  
+     ylab = "Mental Health")
+cov(diseasedata[,13],diseasedata[,7])
+cor(diseasedata[,13],diseasedata[,7])
+
+plot(diseasedata[,2], diseasedata[,7], pch = 16, xlab = "BMI",  
+     ylab = "Mental Health")
+cov(diseasedata[,2],diseasedata[,7])
+cor(diseasedata[,2],diseasedata[,7])
+
+plot(diseasedata[,3], diseasedata[,7], pch = 16, xlab = "Smoking",  
+     ylab = "Mental Health")
+cov(diseasedata[,3],diseasedata[,7])
+cor(diseasedata[,3],diseasedata[,7])
+
+plot(diseasedata[,5], diseasedata[,7], pch = 16, xlab = "Stroke",  
+     ylab = "Mental Health")
+cov(diseasedata[,5],diseasedata[,7])
+cor(diseasedata[,5],diseasedata[,7])
+
+plot(diseasedata[,6], diseasedata[,7], pch = 16, xlab = "Physical Health",  
+     ylab = "Mental Health")
+cov(diseasedata[,6],diseasedata[,7])
+cor(diseasedata[,6],diseasedata[,7])
+
+plot(diseasedata[,7], diseasedata[,7], pch = 16, xlab = "Mental Health",  
+     ylab = "Mental Health")
+cov(diseasedata[,7],diseasedata[,7])
+cor(diseasedata[,7],diseasedata[,7])
+
+plot(diseasedata[,8], diseasedata[,7], pch = 16, xlab = "DiffWalking",  
+     ylab = "Mental Health")
+cov(diseasedata[,8],diseasedata[,7])
+cor(diseasedata[,8],diseasedata[,7])
+
+plot(diseasedata[,9], diseasedata[,7], pch = 16, xlab = "Sex",  
+     ylab = "Mental Health")
+cov(diseasedata[,9],diseasedata[,7])
+cor(diseasedata[,9],diseasedata[,7])
+
+plot(diseasedata[,11], diseasedata[,7], pch = 16, xlab = "Diabetic",  
+     ylab = "Mental Health")
+cov(diseasedata[,11],diseasedata[,7])
+cor(diseasedata[,11],diseasedata[,7])
+
+plot(diseasedata[,17], diseasedata[,7], pch = 16, xlab = "Sleep Time",  
+     ylab = "Mental Health")
+cov(diseasedata[,17],diseasedata[,7])
+cor(diseasedata[,17],diseasedata[,7])
+
+plot(diseasedata[,15], diseasedata[,7], pch = 16, xlab = "Asthma",  
+     ylab = "Mental Health")
+cov(diseasedata[,15],diseasedata[,7])
+cor(diseasedata[,15],diseasedata[,7])
+```
+
+
+```{r}
+#DiffWalking
+
+plot(diseasedata[,1], diseasedata[,8], pch = 16, xlab = "Heart Disease",  
+     ylab = "DiffWalking")
+cov(diseasedata[,1],diseasedata[,8])
+cor(diseasedata[,1],diseasedata[,8])
+
+plot(diseasedata[,16], diseasedata[,8], pch = 16, xlab = "Kidney Cancer",  
+     ylab = "DiffWalking")
+cov(diseasedata[,16],diseasedata[,8])
+cor(diseasedata[,16],diseasedata[,8])
+
+plot(diseasedata[,17], diseasedata[,8], pch = 16, xlab = "Skin Cancer",  
+     ylab = "DiffWalking")
+cov(diseasedata[,17],diseasedata[,8])
+cor(diseasedata[,17],diseasedata[,8])
+
+
+plot(diseasedata[,4], diseasedata[,8], pch = 16, xlab = "Alcohol Drinking",  
+     ylab = "DiffWalking")
+cov(diseasedata[,4],diseasedata[,8])
+cor(diseasedata[,4],diseasedata[,8])
+
+
+plot(diseasedata[,10], diseasedata[,8], pch = 16, xlab = "Average Age",  
+     ylab = "DiffWalking")
+cov(diseasedata[,10],diseasedata[,8])
+cor(diseasedata[,10],diseasedata[,8])
+
+plot(diseasedata[,12], diseasedata[,8], pch = 16, xlab = "Physical Activity",  
+     ylab = "DiffWalking")
+cov(diseasedata[,12],diseasedata[,8])
+cor(diseasedata[,12],diseasedata[,8])
+
+plot(diseasedata[,13], diseasedata[,8], pch = 16, xlab = "General Health",  
+     ylab = "DiffWalking")
+cov(diseasedata[,13],diseasedata[,8])
+cor(diseasedata[,13],diseasedata[,8])
+
+plot(diseasedata[,2], diseasedata[,8], pch = 16, xlab = "BMI",  
+     ylab = "DiffWalking")
+cov(diseasedata[,2],diseasedata[,8])
+cor(diseasedata[,2],diseasedata[,8])
+
+plot(diseasedata[,3], diseasedata[,8], pch = 16, xlab = "Smoking",  
+     ylab = "DiffWalking")
+cov(diseasedata[,3],diseasedata[,8])
+cor(diseasedata[,3],diseasedata[,8])
+
+plot(diseasedata[,5], diseasedata[,8], pch = 16, xlab = "Stroke",  
+     ylab = "DiffWalking")
+cov(diseasedata[,5],diseasedata[,8])
+cor(diseasedata[,5],diseasedata[,8])
+
+plot(diseasedata[,6], diseasedata[,8], pch = 16, xlab = "Physical Health",  
+     ylab = "DiffWalking")
+cov(diseasedata[,6],diseasedata[,8])
+cor(diseasedata[,6],diseasedata[,8])
+
+plot(diseasedata[,7], diseasedata[,8], pch = 16, xlab = "Mental Health",  
+     ylab = "DiffWalking")
+cov(diseasedata[,7],diseasedata[,8])
+cor(diseasedata[,7],diseasedata[,8])
+
+plot(diseasedata[,8], diseasedata[,8], pch = 16, xlab = "DiffWalking",  
+     ylab = "DiffWalking")
+cov(diseasedata[,8],diseasedata[,8])
+cor(diseasedata[,8],diseasedata[,8])
+
+plot(diseasedata[,9], diseasedata[,8], pch = 16, xlab = "Sex",  
+     ylab = "DiffWalking")
+cov(diseasedata[,9],diseasedata[,8])
+cor(diseasedata[,9],diseasedata[,8])
+
+plot(diseasedata[,11], diseasedata[,8], pch = 16, xlab = "Diabetic",  
+     ylab = "DiffWalking")
+cov(diseasedata[,11],diseasedata[,8])
+cor(diseasedata[,11],diseasedata[,8])
+
+plot(diseasedata[,14], diseasedata[,8], pch = 16, xlab = "Sleep Time",  
+     ylab = "DiffWalking")
+cov(diseasedata[,14],diseasedata[,8])
+cor(diseasedata[,14],diseasedata[,8])
+
+plot(diseasedata[,15], diseasedata[,8], pch = 16, xlab = "Asthma",  
+     ylab = "DiffWalking")
+cov(diseasedata[,15],diseasedata[,8])
+cor(diseasedata[,15],diseasedata[,8])
+```
+
+
+```{r}
+#Sex
+
+plot(diseasedata[,1], diseasedata[,9], pch = 16, xlab = "Heart Disease",  
+     ylab = "Sex")
+cov(diseasedata[,1],diseasedata[,9])
+cor(diseasedata[,1],diseasedata[,9])
+
+plot(diseasedata[,16], diseasedata[,9], pch = 16, xlab = "Kidney Cancer",  
+     ylab = "Sex")
+cov(diseasedata[,16],diseasedata[,9])
+cor(diseasedata[,16],diseasedata[,9])
+
+plot(diseasedata[,17], diseasedata[,9], pch = 16, xlab = "Skin Cancer",  
+     ylab = "Sex")
+cov(diseasedata[,17],diseasedata[,9])
+cor(diseasedata[,17],diseasedata[,9])
+
+
+plot(diseasedata[,9], diseasedata[,9], pch = 16, xlab = "Alcohol Drinking",  
+     ylab = "Sex")
+cov(diseasedata[,9],diseasedata[,9])
+cor(diseasedata[,9],diseasedata[,9])
+
+
+plot(diseasedata[,10], diseasedata[,9], pch = 16, xlab = "Average Age",  
+     ylab = "Sex")
+cov(diseasedata[,10],diseasedata[,9])
+cor(diseasedata[,10],diseasedata[,9])
+
+plot(diseasedata[,12], diseasedata[,9], pch = 16, xlab = "Physical Activity",  
+     ylab = "Sex")
+cov(diseasedata[,12],diseasedata[,9])
+cor(diseasedata[,12],diseasedata[,9])
+
+plot(diseasedata[,13], diseasedata[,9], pch = 16, xlab = "General Health",  
+     ylab = "Sex")
+cov(diseasedata[,13],diseasedata[,9])
+cor(diseasedata[,13],diseasedata[,9])
+
+plot(diseasedata[,2], diseasedata[,9], pch = 16, xlab = "BMI",  
+     ylab = "Sex")
+cov(diseasedata[,2],diseasedata[,9])
+cor(diseasedata[,2],diseasedata[,9])
+
+plot(diseasedata[,3], diseasedata[,9], pch = 16, xlab = "Smoking",  
+     ylab = "Sex")
+cov(diseasedata[,3],diseasedata[,9])
+cor(diseasedata[,3],diseasedata[,9])
+
+plot(diseasedata[,5], diseasedata[,9], pch = 16, xlab = "Stroke",  
+     ylab = "Sex")
+cov(diseasedata[,5],diseasedata[,9])
+cor(diseasedata[,5],diseasedata[,9])
+
+plot(diseasedata[,6], diseasedata[,9], pch = 16, xlab = "Physical Health",  
+     ylab = "Sex")
+cov(diseasedata[,6],diseasedata[,9])
+cor(diseasedata[,6],diseasedata[,9])
+
+plot(diseasedata[,7], diseasedata[,9], pch = 16, xlab = "Mental Health",  
+     ylab = "Sex")
+cov(diseasedata[,7],diseasedata[,9])
+cor(diseasedata[,7],diseasedata[,9])
+
+plot(diseasedata[,8], diseasedata[,9], pch = 16, xlab = "DiffWalking",  
+     ylab = "Sex")
+cov(diseasedata[,8],diseasedata[,9])
+cor(diseasedata[,8],diseasedata[,9])
+
+plot(diseasedata[,9], diseasedata[,9], pch = 16, xlab = "Sex",  
+     ylab = "Sex")
+cov(diseasedata[,9],diseasedata[,9])
+cor(diseasedata[,9],diseasedata[,9])
+
+plot(diseasedata[,11], diseasedata[,9], pch = 16, xlab = "Diabetic",  
+     ylab = "Sex")
+cov(diseasedata[,11],diseasedata[,9])
+cor(diseasedata[,11],diseasedata[,9])
+
+plot(diseasedata[,14], diseasedata[,9], pch = 16, xlab = "Sleep Time",  
+     ylab = "Sex")
+cov(diseasedata[,14],diseasedata[,9])
+cor(diseasedata[,14],diseasedata[,9])
+
+plot(diseasedata[,15], diseasedata[,9], pch = 16, xlab = "Asthma",  
+     ylab = "Sex")
+cov(diseasedata[,15],diseasedata[,9])
+cor(diseasedata[,15],diseasedata[,9])
+```
+
+
+```{r}
+#Average Age
+
+plot(diseasedata[,1], diseasedata[,10], pch = 16, xlab = "Heart Disease",  
+     ylab = "Average Age")
+cov(diseasedata[,1],diseasedata[,10])
+cor(diseasedata[,1],diseasedata[,10])
+
+plot(diseasedata[,16], diseasedata[,10], pch = 16, xlab = "Kidney Cancer",  
+     ylab = "Average Age")
+cov(diseasedata[,16],diseasedata[,10])
+cor(diseasedata[,16],diseasedata[,10])
+
+plot(diseasedata[,17], diseasedata[,10], pch = 16, xlab = "Skin Cancer",  
+     ylab = "Average Age")
+cov(diseasedata[,17],diseasedata[,10])
+cor(diseasedata[,17],diseasedata[,10])
+
+
+plot(diseasedata[,4], diseasedata[,10], pch = 16, xlab = "Alcohol Drinking",  
+     ylab = "Average Age")
+cov(diseasedata[,4],diseasedata[,10])
+cor(diseasedata[,4],diseasedata[,10])
+
+
+plot(diseasedata[,10], diseasedata[,10], pch = 16, xlab = "Average Age",  
+     ylab = "Average Age")
+cov(diseasedata[,10],diseasedata[,10])
+cor(diseasedata[,10],diseasedata[,10])
+
+plot(diseasedata[,12], diseasedata[,10], pch = 16, xlab = "Physical Activity",  
+     ylab = "Average Age")
+cov(diseasedata[,12],diseasedata[,10])
+cor(diseasedata[,12],diseasedata[,10])
+
+plot(diseasedata[,13], diseasedata[,10], pch = 16, xlab = "General Health",  
+     ylab = "Average Age")
+cov(diseasedata[,13],diseasedata[,10])
+cor(diseasedata[,13],diseasedata[,10])
+
+plot(diseasedata[,2], diseasedata[,10], pch = 16, xlab = "BMI",  
+     ylab = "Average Age")
+cov(diseasedata[,2],diseasedata[,10])
+cor(diseasedata[,2],diseasedata[,10])
+
+plot(diseasedata[,3], diseasedata[,10], pch = 16, xlab = "Smoking",  
+     ylab = "Average Age")
+cov(diseasedata[,3],diseasedata[,10])
+cor(diseasedata[,3],diseasedata[,10])
+
+plot(diseasedata[,5], diseasedata[,10], pch = 16, xlab = "Stroke",  
+     ylab = "Average Age")
+cov(diseasedata[,5],diseasedata[,10])
+cor(diseasedata[,5],diseasedata[,10])
+
+plot(diseasedata[,6], diseasedata[,10], pch = 16, xlab = "Physical Health",  
+     ylab = "Average Age")
+cov(diseasedata[,6],diseasedata[,10])
+cor(diseasedata[,6],diseasedata[,10])
+
+plot(diseasedata[,7], diseasedata[,10], pch = 16, xlab = "Mental Health",  
+     ylab = "Average Age")
+cov(diseasedata[,7],diseasedata[,10])
+cor(diseasedata[,7],diseasedata[,10])
+
+plot(diseasedata[,8], diseasedata[,10], pch = 16, xlab = "DiffWalking",  
+     ylab = "Average Age")
+cov(diseasedata[,8],diseasedata[,10])
+cor(diseasedata[,8],diseasedata[,10])
+
+plot(diseasedata[,9], diseasedata[,10], pch = 16, xlab = "Sex",  
+     ylab = "Average Age")
+cov(diseasedata[,9],diseasedata[,10])
+cor(diseasedata[,9],diseasedata[,10])
+
+plot(diseasedata[,11], diseasedata[,10], pch = 16, xlab = "Diabetic",  
+     ylab = "Average Age")
+cov(diseasedata[,11],diseasedata[,10])
+cor(diseasedata[,11],diseasedata[,10])
+
+plot(diseasedata[,14], diseasedata[,10], pch = 16, xlab = "Sleep Time",  
+     ylab = "Average Age")
+cov(diseasedata[,14],diseasedata[,10])
+cor(diseasedata[,14],diseasedata[,10])
+
+plot(diseasedata[,15], diseasedata[,10], pch = 16, xlab = "Asthma",  
+     ylab = "Average Age")
+cov(diseasedata[,15],diseasedata[,10])
+cor(diseasedata[,15],diseasedata[,10])
+```
+
+
+```{r}
+#Diabetic
+
+plot(diseasedata[,1], diseasedata[,11], pch = 16, xlab = "Heart Disease",  
+     ylab = "Diabetic")
+cov(diseasedata[,1],diseasedata[,11])
+cor(diseasedata[,1],diseasedata[,11])
+
+plot(diseasedata[,16], diseasedata[,11], pch = 16, xlab = "Kidney Cancer",  
+     ylab = "Diabetic")
+cov(diseasedata[,16],diseasedata[,11])
+cor(diseasedata[,16],diseasedata[,11])
+
+plot(diseasedata[,17], diseasedata[,11], pch = 16, xlab = "Skin Cancer",  
+     ylab = "Diabetic")
+cov(diseasedata[,17],diseasedata[,11])
+cor(diseasedata[,17],diseasedata[,11])
+
+
+plot(diseasedata[,4], diseasedata[,11], pch = 16, xlab = "Alcohol Drinking",  
+     ylab = "Diabetic")
+cov(diseasedata[,4],diseasedata[,11])
+cor(diseasedata[,4],diseasedata[,11])
+
+
+plot(diseasedata[,10], diseasedata[,11], pch = 16, xlab = "Average Age",  
+     ylab = "Diabetic")
+cov(diseasedata[,10],diseasedata[,11])
+cor(diseasedata[,10],diseasedata[,11])
+
+plot(diseasedata[,12], diseasedata[,11], pch = 16, xlab = "Physical Activity",  
+     ylab = "Diabetic")
+cov(diseasedata[,12],diseasedata[,11])
+cor(diseasedata[,12],diseasedata[,11])
+
+plot(diseasedata[,13], diseasedata[,11], pch = 16, xlab = "General Health",  
+     ylab = "Diabetic")
+cov(diseasedata[,13],diseasedata[,11])
+cor(diseasedata[,13],diseasedata[,11])
+
+plot(diseasedata[,2], diseasedata[,11], pch = 16, xlab = "BMI",  
+     ylab = "Diabetic")
+cov(diseasedata[,2],diseasedata[,11])
+cor(diseasedata[,2],diseasedata[,11])
+
+plot(diseasedata[,3], diseasedata[,11], pch = 16, xlab = "Smoking",  
+     ylab = "Diabetic")
+cov(diseasedata[,3],diseasedata[,11])
+cor(diseasedata[,3],diseasedata[,11])
+
+plot(diseasedata[,5], diseasedata[,11], pch = 16, xlab = "Stroke",  
+     ylab = "Diabetic")
+cov(diseasedata[,5],diseasedata[,11])
+cor(diseasedata[,5],diseasedata[,11])
+
+plot(diseasedata[,6], diseasedata[,11], pch = 16, xlab = "Physical Health",  
+     ylab = "Diabetic")
+cov(diseasedata[,6],diseasedata[,11])
+cor(diseasedata[,6],diseasedata[,11])
+
+plot(diseasedata[,7], diseasedata[,11], pch = 16, xlab = "Mental Health",  
+     ylab = "Diabetic")
+cov(diseasedata[,7],diseasedata[,11])
+cor(diseasedata[,7],diseasedata[,11])
+
+plot(diseasedata[,8], diseasedata[,11], pch = 16, xlab = "DiffWalking",  
+     ylab = "Diabetic")
+cov(diseasedata[,8],diseasedata[,11])
+cor(diseasedata[,8],diseasedata[,11])
+
+plot(diseasedata[,9], diseasedata[,11], pch = 16, xlab = "Sex",  
+     ylab = "Diabetic")
+cov(diseasedata[,9],diseasedata[,11])
+cor(diseasedata[,9],diseasedata[,11])
+
+plot(diseasedata[,11], diseasedata[,11], pch = 16, xlab = "Diabetic",  
+     ylab = "Diabetic")
+cov(diseasedata[,11],diseasedata[,11])
+cor(diseasedata[,11],diseasedata[,11])
+
+plot(diseasedata[,14], diseasedata[,11], pch = 16, xlab = "Sleep Time",  
+     ylab = "Diabetic")
+cov(diseasedata[,14],diseasedata[,11])
+cor(diseasedata[,14],diseasedata[,11])
+
+plot(diseasedata[,15], diseasedata[,11], pch = 16, xlab = "Asthma",  
+     ylab = "Diabetic")
+cov(diseasedata[,15],diseasedata[,11])
+cor(diseasedata[,15],diseasedata[,11])
+```
+
+
+```{r}
+#Physical Activity
+
+plot(diseasedata[,1], diseasedata[,12], pch = 16, xlab = "Heart Disease",  
+     ylab = "Physical Activity")
+cov(diseasedata[,1],diseasedata[,12])
+cor(diseasedata[,1],diseasedata[,12])
+
+plot(diseasedata[,16], diseasedata[,12], pch = 16, xlab = "Kidney Cancer",  
+     ylab = "Physical Activity")
+cov(diseasedata[,16],diseasedata[,12])
+cor(diseasedata[,16],diseasedata[,12])
+
+plot(diseasedata[,17], diseasedata[,12], pch = 16, xlab = "Skin Cancer",  
+     ylab = "Physical Activity")
+cov(diseasedata[,17],diseasedata[,12])
+cor(diseasedata[,17],diseasedata[,12])
+
+
+plot(diseasedata[,4], diseasedata[,12], pch = 16, xlab = "Alcohol Drinking",  
+     ylab = "Physical Activity")
+cov(diseasedata[,4],diseasedata[,12])
+cor(diseasedata[,4],diseasedata[,12])
+
+
+plot(diseasedata[,10], diseasedata[,12], pch = 16, xlab = "Average Age",
+     ylab = "Physical Activity")
+cov(diseasedata[,10],diseasedata[,12])
+cor(diseasedata[,10],diseasedata[,12])
+
+plot(diseasedata[,12], diseasedata[,12], pch = 16, xlab = "Physical Activity",  
+     ylab = "Physical Activity")
+cov(diseasedata[,12],diseasedata[,12])
+cor(diseasedata[,12],diseasedata[,12])
+
+plot(diseasedata[,13], diseasedata[,12], pch = 16, xlab = "General Health",  
+     ylab = "Physical Activity")
+cov(diseasedata[,13],diseasedata[,12])
+cor(diseasedata[,13],diseasedata[,12])
+
+plot(diseasedata[,2], diseasedata[,12], pch = 16, xlab = "BMI",  
+     ylab = "Physical Activity")
+cov(diseasedata[,2],diseasedata[,12])
+cor(diseasedata[,2],diseasedata[,12])
+
+plot(diseasedata[,3], diseasedata[,12], pch = 16, xlab = "Smoking",  
+     ylab = "Physical Activity")
+cov(diseasedata[,3],diseasedata[,12])
+cor(diseasedata[,3],diseasedata[,12])
+
+plot(diseasedata[,5], diseasedata[,12], pch = 16, xlab = "Stroke",  
+     ylab = "Physical Activity")
+cov(diseasedata[,5],diseasedata[,12])
+cor(diseasedata[,5],diseasedata[,12])
+
+plot(diseasedata[,6], diseasedata[,12], pch = 16, xlab = "Physical Health",  
+     ylab = "Physical Activity")
+cov(diseasedata[,6],diseasedata[,12])
+cor(diseasedata[,6],diseasedata[,12])
+
+plot(diseasedata[,7], diseasedata[,12], pch = 16, xlab = "Mental Health",  
+     ylab = "Physical Activity")
+cov(diseasedata[,7],diseasedata[,12])
+cor(diseasedata[,7],diseasedata[,12])
+
+plot(diseasedata[,8], diseasedata[,12], pch = 16, xlab = "DiffWalking",  
+     ylab = "Physical Activity")
+cov(diseasedata[,8],diseasedata[,12])
+cor(diseasedata[,8],diseasedata[,12])
+
+plot(diseasedata[,9], diseasedata[,12], pch = 16, xlab = "Sex",  
+     ylab = "Physical Activity")
+cov(diseasedata[,9],diseasedata[,12])
+cor(diseasedata[,9],diseasedata[,12])
+
+plot(diseasedata[,11], diseasedata[,12], pch = 16, xlab = "Diabetic",  
+     ylab = "Physical Activity")
+cov(diseasedata[,11],diseasedata[,12])
+cor(diseasedata[,11],diseasedata[,12])
+
+plot(diseasedata[,14], diseasedata[,12], pch = 16, xlab = "Sleep Time",  
+     ylab = "Physical Activity")
+cov(diseasedata[,14],diseasedata[,12])
+cor(diseasedata[,14],diseasedata[,12])
+
+plot(diseasedata[,15], diseasedata[,12], pch = 16, xlab = "Asthma",  
+     ylab = "Physical Activity")
+cov(diseasedata[,15],diseasedata[,12])
+cor(diseasedata[,15],diseasedata[,12])
+```
+
+
+
+```{r}
+#Gen Health 
+
+plot(diseasedata[,1], diseasedata[,13], pch = 16, xlab = "Heart Disease",  
+     ylab = "Gen Health")
+cov(diseasedata[,1],diseasedata[,13])
+cor(diseasedata[,1],diseasedata[,13])
+
+plot(diseasedata[,16], diseasedata[,13], pch = 16, xlab = "Kidney Cancer",  
+     ylab = "Gen Health")
+cov(diseasedata[,16],diseasedata[,13])
+cor(diseasedata[,16],diseasedata[,13])
+
+plot(diseasedata[,17], diseasedata[,13], pch = 16, xlab = "Skin Cancer",  
+     ylab = "Gen Health")
+cov(diseasedata[,17],diseasedata[,13])
+cor(diseasedata[,17],diseasedata[,13])
+
+
+plot(diseasedata[,4], diseasedata[,13], pch = 16, xlab = "Alcohol Drinking",  
+     ylab = "Gen Health")
+cov(diseasedata[,4],diseasedata[,13])
+cor(diseasedata[,4],diseasedata[,13])
+
+
+plot(diseasedata[,10], diseasedata[,13], pch = 16, xlab = "Average Age",  
+     ylab = "Gen Health")
+cov(diseasedata[,10],diseasedata[,13])
+cor(diseasedata[,10],diseasedata[,13])
+
+plot(diseasedata[,12], diseasedata[,13], pch = 16, xlab = "Physical Activity",  
+     ylab = "Gen Health")
+cov(diseasedata[,12],diseasedata[,13])
+cor(diseasedata[,12],diseasedata[,13])
+
+plot(diseasedata[,13], diseasedata[,13], pch = 16, xlab = "General Health",  
+     ylab = "Gen Health")
+cov(diseasedata[,13],diseasedata[,13])
+cor(diseasedata[,13],diseasedata[,13])
+
+plot(diseasedata[,2], diseasedata[,13], pch = 16, xlab = "BMI",  
+     ylab = "Gen Health")
+cov(diseasedata[,2],diseasedata[,13])
+cor(diseasedata[,2],diseasedata[,13])
+
+plot(diseasedata[,3], diseasedata[,13], pch = 16, xlab = "Smoking",  
+     ylab = "Gen Health")
+cov(diseasedata[,3],diseasedata[,13])
+cor(diseasedata[,3],diseasedata[,13])
+
+plot(diseasedata[,5], diseasedata[,13], pch = 16, xlab = "Stroke",  
+     ylab = "Gen Health")
+cov(diseasedata[,5],diseasedata[,13])
+cor(diseasedata[,5],diseasedata[,13])
+
+plot(diseasedata[,6], diseasedata[,13], pch = 16, xlab = "Physical Health",  
+     ylab = "Gen Health")
+cov(diseasedata[,6],diseasedata[,13])
+cor(diseasedata[,6],diseasedata[,13])
+
+plot(diseasedata[,7], diseasedata[,13], pch = 16, xlab = "Mental Health",  
+     ylab = "Gen Health")
+cov(diseasedata[,7],diseasedata[,13])
+cor(diseasedata[,7],diseasedata[,13])
+
+plot(diseasedata[,8], diseasedata[,13], pch = 16, xlab = "DiffWalking",  
+     ylab = "Gen Health")
+cov(diseasedata[,8],diseasedata[,13])
+cor(diseasedata[,8],diseasedata[,13])
+
+plot(diseasedata[,9], diseasedata[,13], pch = 16, xlab = "Sex",  
+     ylab = "Gen Health")
+cov(diseasedata[,9],diseasedata[,13])
+cor(diseasedata[,9],diseasedata[,13])
+
+plot(diseasedata[,11], diseasedata[,13], pch = 16, xlab = "Diabetic",  
+     ylab = "Gen Health")
+cov(diseasedata[,11],diseasedata[,13])
+cor(diseasedata[,11],diseasedata[,13])
+
+plot(diseasedata[,14], diseasedata[,13], pch = 16, xlab = "Sleep Time",  
+     ylab = "Gen Health")
+cov(diseasedata[,14],diseasedata[,13])
+cor(diseasedata[,14],diseasedata[,13])
+
+plot(diseasedata[,15], diseasedata[,13], pch = 16, xlab = "Asthma",  
+     ylab = "Gen Health")
+cov(diseasedata[,15],diseasedata[,13])
+cor(diseasedata[,15],diseasedata[,13])
+```
+
+
+```{r}
+#Sleep Time
+
+plot(diseasedata[,1], diseasedata[,14], pch = 16, xlab = "Heart Disease",  
+     ylab = "Sleep Time")
+cov(diseasedata[,1],diseasedata[,14])
+cor(diseasedata[,1],diseasedata[,14])
+
+plot(diseasedata[,16], diseasedata[,14], pch = 16, xlab = "Kidney Cancer",  
+     ylab = "Sleep Time")
+cov(diseasedata[,16],diseasedata[,14])
+cor(diseasedata[,16],diseasedata[,14])
+
+plot(diseasedata[,17], diseasedata[,14], pch = 16, xlab = "Skin Cancer",  
+     ylab = "Sleep Time")
+cov(diseasedata[,17],diseasedata[,14])
+cor(diseasedata[,17],diseasedata[,14])
+
+
+plot(diseasedata[,4], diseasedata[,14], pch = 16, xlab = "Alcohol Drinking",  
+     ylab = "Sleep Time")
+cov(diseasedata[,4],diseasedata[,14])
+cor(diseasedata[,4],diseasedata[,14])
+
+
+plot(diseasedata[,10], diseasedata[,14], pch = 16, xlab = "Average Age",  
+     ylab = "Sleep Time")
+cov(diseasedata[,10],diseasedata[,14])
+cor(diseasedata[,10],diseasedata[,14])
+
+plot(diseasedata[,12], diseasedata[,14], pch = 16, xlab = "Physical Activity",  
+     ylab = "Sleep Time")
+cov(diseasedata[,12],diseasedata[,14])
+cor(diseasedata[,12],diseasedata[,14])
+
+plot(diseasedata[,13], diseasedata[,14], pch = 16, xlab = "General Health",  
+     ylab = "Sleep Time")
+cov(diseasedata[,13],diseasedata[,14])
+cor(diseasedata[,13],diseasedata[,14])
+
+plot(diseasedata[,2], diseasedata[,14], pch = 16, xlab = "BMI",  
+     ylab = "Sleep Time")
+cov(diseasedata[,2],diseasedata[,14])
+cor(diseasedata[,2],diseasedata[,14])
+
+plot(diseasedata[,3], diseasedata[,14], pch = 16, xlab = "Smoking",  
+     ylab = "Sleep Time")
+cov(diseasedata[,3],diseasedata[,14])
+cor(diseasedata[,3],diseasedata[,14])
+
+plot(diseasedata[,5], diseasedata[,14], pch = 16, xlab = "Stroke",  
+     ylab = "Sleep Time")
+cov(diseasedata[,5],diseasedata[,14])
+cor(diseasedata[,5],diseasedata[,14])
+
+plot(diseasedata[,6], diseasedata[,14], pch = 16, xlab = "Physical Health",  
+     ylab = "Sleep Time")
+cov(diseasedata[,6],diseasedata[,14])
+cor(diseasedata[,6],diseasedata[,14])
+
+plot(diseasedata[,7], diseasedata[,14], pch = 16, xlab = "Mental Health",  
+     ylab = "Sleep Time")
+cov(diseasedata[,7],diseasedata[,14])
+cor(diseasedata[,7],diseasedata[,14])
+
+plot(diseasedata[,8], diseasedata[,14], pch = 16, xlab = "DiffWalking",  
+     ylab = "Sleep Time")
+cov(diseasedata[,8],diseasedata[,14])
+cor(diseasedata[,8],diseasedata[,14])
+
+plot(diseasedata[,9], diseasedata[,14], pch = 16, xlab = "Sex",  
+     ylab = "Sleep Time")
+cov(diseasedata[,9],diseasedata[,14])
+cor(diseasedata[,9],diseasedata[,14])
+
+plot(diseasedata[,11], diseasedata[,14], pch = 16, xlab = "Diabetic",  
+     ylab = "Sleep Time")
+cov(diseasedata[,11],diseasedata[,14])
+cor(diseasedata[,11],diseasedata[,14])
+
+plot(diseasedata[,14], diseasedata[,14], pch = 16, xlab = "Sleep Time",  
+     ylab = "Sleep Time")
+cov(diseasedata[,14],diseasedata[,14])
+cor(diseasedata[,14],diseasedata[,14])
+
+plot(diseasedata[,15], diseasedata[,14], pch = 16, xlab = "Asthma",  
+     ylab = "Sleep Time")
+cov(diseasedata[,15],diseasedata[,14])
+cor(diseasedata[,15],diseasedata[,14])
+```
+
+
+```{r}
+#Asthma
+
+plot(diseasedata[,1], diseasedata[,15], pch = 16, xlab = "Heart Disease",  
+     ylab = "Asthma")
+cov(diseasedata[,1],diseasedata[,15])
+cor(diseasedata[,1],diseasedata[,15])
+
+plot(diseasedata[,16], diseasedata[,15], pch = 16, xlab = "Kidney Cancer",  
+     ylab = "Asthma")
+cov(diseasedata[,16],diseasedata[,15])
+cor(diseasedata[,16],diseasedata[,15])
+
+plot(diseasedata[,17], diseasedata[,15], pch = 16, xlab = "Skin Cancer",  
+     ylab = "Asthma")
+cov(diseasedata[,17],diseasedata[,15])
+cor(diseasedata[,17],diseasedata[,15])
+
+
+plot(diseasedata[,4], diseasedata[,15], pch = 16, xlab = "Alcohol Drinking",  
+     ylab = "Asthma")
+cov(diseasedata[,4],diseasedata[,15])
+cor(diseasedata[,4],diseasedata[,15])
+
+
+plot(diseasedata[,10], diseasedata[,15], pch = 16, xlab = "Average Age",  
+     ylab = "Asthma")
+cov(diseasedata[,10],diseasedata[,15])
+cor(diseasedata[,10],diseasedata[,15])
+
+plot(diseasedata[,12], diseasedata[,15], pch = 16, xlab = "Physical Activity",  
+     ylab = "Asthma")
+cov(diseasedata[,12],diseasedata[,15])
+cor(diseasedata[,12],diseasedata[,15])
+
+plot(diseasedata[,13], diseasedata[,15], pch = 16, xlab = "General Health",  
+     ylab = "Asthma")
+cov(diseasedata[,13],diseasedata[,15])
+cor(diseasedata[,13],diseasedata[,15])
+
+plot(diseasedata[,2], diseasedata[,15], pch = 16, xlab = "BMI",  
+     ylab = "Asthma")
+cov(diseasedata[,2],diseasedata[,15])
+cor(diseasedata[,2],diseasedata[,15])
+
+plot(diseasedata[,3], diseasedata[,15], pch = 16, xlab = "Smoking",  
+     ylab = "Asthma")
+cov(diseasedata[,3],diseasedata[,15])
+cor(diseasedata[,3],diseasedata[,15])
+
+plot(diseasedata[,5], diseasedata[,15], pch = 16, xlab = "Stroke",  
+     ylab = "Asthma")
+cov(diseasedata[,5],diseasedata[,15])
+cor(diseasedata[,5],diseasedata[,15])
+
+plot(diseasedata[,6], diseasedata[,15], pch = 16, xlab = "Physical Health",  
+     ylab = "Asthma")
+cov(diseasedata[,6],diseasedata[,15])
+cor(diseasedata[,6],diseasedata[,15])
+
+plot(diseasedata[,7], diseasedata[,15], pch = 16, xlab = "Mental Health",  
+     ylab = "Asthma")
+cov(diseasedata[,7],diseasedata[,15])
+cor(diseasedata[,7],diseasedata[,15])
+
+plot(diseasedata[,8], diseasedata[,15], pch = 16, xlab = "DiffWalking",  
+     ylab = "Asthma")
+cov(diseasedata[,8],diseasedata[,15])
+cor(diseasedata[,8],diseasedata[,15])
+
+plot(diseasedata[,9], diseasedata[,15], pch = 16, xlab = "Sex",  
+     ylab = "Asthma")
+cov(diseasedata[,9],diseasedata[,15])
+cor(diseasedata[,9],diseasedata[,15])
+
+plot(diseasedata[,11], diseasedata[,15], pch = 16, xlab = "Diabetic",  
+     ylab = "Asthma")
+cov(diseasedata[,11],diseasedata[,15])
+cor(diseasedata[,11],diseasedata[,15])
+
+plot(diseasedata[,14], diseasedata[,15], pch = 16, xlab = "Sleep Time",  
+     ylab = "Asthma")
+cov(diseasedata[,14],diseasedata[,15])
+cor(diseasedata[,14],diseasedata[,15])
+
+plot(diseasedata[,15], diseasedata[,15], pch = 16, xlab = "Asthma",  
+     ylab = "Asthma")
+cov(diseasedata[,15],diseasedata[,15])
+cor(diseasedata[,15],diseasedata[,15])
+```
+
+
+```{r}
+#Kidney Disease
+
+plot(diseasedata[,1], diseasedata[,16], pch = 16, xlab = "Heart Disease",  
+     ylab = "Kidney Disease")
+cov(diseasedata[,1],diseasedata[,16])
+cor(diseasedata[,1],diseasedata[,16])
+
+plot(diseasedata[,16], diseasedata[,16], pch = 16, xlab = "Kidney Cancer",  
+     ylab = "Kidney Disease")
+cov(diseasedata[,16],diseasedata[,16])
+cor(diseasedata[,16],diseasedata[,16])
+
+plot(diseasedata[,17], diseasedata[,16], pch = 16, xlab = "Skin Cancer",  
+     ylab = "Kidney Disease")
+cov(diseasedata[,17],diseasedata[,16])
+cor(diseasedata[,17],diseasedata[,16])
+
+
+plot(diseasedata[,4], diseasedata[,16], pch = 16, xlab = "Alcohol Drinking",  
+     ylab = "Kidney Disease")
+cov(diseasedata[,4],diseasedata[,16])
+cor(diseasedata[,4],diseasedata[,16])
+
+
+plot(diseasedata[,10], diseasedata[,16], pch = 16, xlab = "Average Age",  
+     ylab = "Kidney Disease")
+cov(diseasedata[,10],diseasedata[,16])
+cor(diseasedata[,10],diseasedata[,16])
+
+plot(diseasedata[,12], diseasedata[,16], pch = 16, xlab = "Physical Activity",  
+     ylab = "Kidney Disease")
+cov(diseasedata[,12],diseasedata[,16])
+cor(diseasedata[,12],diseasedata[,16])
+
+plot(diseasedata[,13], diseasedata[,16], pch = 16, xlab = "General Health",  
+     ylab = "Kidney Disease")
+cov(diseasedata[,13],diseasedata[,16])
+cor(diseasedata[,13],diseasedata[,16])
+
+plot(diseasedata[,2], diseasedata[,16], pch = 16, xlab = "BMI",  
+     ylab = "Kidney Disease")
+cov(diseasedata[,2],diseasedata[,16])
+cor(diseasedata[,2],diseasedata[,16])
+
+plot(diseasedata[,3], diseasedata[,16], pch = 16, xlab = "Smoking",  
+     ylab = "Kidney Disease")
+cov(diseasedata[,3],diseasedata[,16])
+cor(diseasedata[,3],diseasedata[,16])
+
+plot(diseasedata[,5], diseasedata[,16], pch = 16, xlab = "Stroke",  
+     ylab = "Kidney Disease")
+cov(diseasedata[,5],diseasedata[,16])
+cor(diseasedata[,5],diseasedata[,16])
+
+plot(diseasedata[,6], diseasedata[,16], pch = 16, xlab = "Physical Health",  
+     ylab = "Kidney Disease")
+cov(diseasedata[,6],diseasedata[,16])
+cor(diseasedata[,6],diseasedata[,16])
+
+plot(diseasedata[,7], diseasedata[,16], pch = 16, xlab = "Mental Health",  
+     ylab = "Kidney Disease")
+cov(diseasedata[,7],diseasedata[,16])
+cor(diseasedata[,7],diseasedata[,16])
+
+plot(diseasedata[,8], diseasedata[,16], pch = 16, xlab = "DiffWalking",  
+     ylab = "Kidney Disease")
+cov(diseasedata[,8],diseasedata[,16])
+cor(diseasedata[,8],diseasedata[,16])
+
+plot(diseasedata[,9], diseasedata[,16], pch = 16, xlab = "Sex",  
+     ylab = "Kidney Disease")
+cov(diseasedata[,9],diseasedata[,16])
+cor(diseasedata[,9],diseasedata[,16])
+
+plot(diseasedata[,11], diseasedata[,16], pch = 16, xlab = "Diabetic",  
+     ylab = "Kidney Disease")
+cov(diseasedata[,11],diseasedata[,16])
+cor(diseasedata[,11],diseasedata[,16])
+
+plot(diseasedata[,14], diseasedata[,16], pch = 16, xlab = "Sleep Time",  
+     ylab = "Kidney Disease")
+cov(diseasedata[,14],diseasedata[,16])
+cor(diseasedata[,14],diseasedata[,16])
+
+plot(diseasedata[,15], diseasedata[,16], pch = 16, xlab = "Asthma",  
+     ylab = "Kidney Disease")
+cov(diseasedata[,15],diseasedata[,16])
+cor(diseasedata[,15],diseasedata[,16])
+```
+
+
+
+```{r}
+#Skin Cancer 
+
+plot(diseasedata[,1], diseasedata[,17], pch = 16, xlab = "Heart Disease",  
+     ylab = "Skin Cancer")
+cov(diseasedata[,1],diseasedata[,17])
+cor(diseasedata[,1],diseasedata[,17])
+
+plot(diseasedata[,16], diseasedata[,17], pch = 16, xlab = "Kidney Cancer",  
+     ylab = "Skin Cancer")
+cov(diseasedata[,16],diseasedata[,17])
+cor(diseasedata[,16],diseasedata[,17])
+
+plot(diseasedata[,17], diseasedata[,17], pch = 16, xlab = "Skin Cancer",  
+     ylab = "Skin Cancer")
+cov(diseasedata[,17],diseasedata[,17])
+cor(diseasedata[,17],diseasedata[,17])
+
+
+plot(diseasedata[,4], diseasedata[,17], pch = 16, xlab = "Alcohol Drinking",  
+     ylab = "Skin Cancer")
+cov(diseasedata[,4],diseasedata[,17])
+cor(diseasedata[,4],diseasedata[,17])
+
+
+plot(diseasedata[,10], diseasedata[,17], pch = 16, xlab = "Average Age",  
+     ylab = "Skin Cancer")
+cov(diseasedata[,10],diseasedata[,17])
+cor(diseasedata[,10],diseasedata[,17])
+
+plot(diseasedata[,12], diseasedata[,17], pch = 16, xlab = "Physical Activity",  
+     ylab = "Skin Cancer")
+cov(diseasedata[,12],diseasedata[,17])
+cor(diseasedata[,12],diseasedata[,17])
+
+plot(diseasedata[,13], diseasedata[,17], pch = 16, xlab = "General Health",  
+     ylab = "Skin Cancer")
+cov(diseasedata[,13],diseasedata[,17])
+cor(diseasedata[,13],diseasedata[,17])
+
+plot(diseasedata[,2], diseasedata[,17], pch = 16, xlab = "BMI",  
+     ylab = "Skin Cancer")
+cov(diseasedata[,2],diseasedata[,17])
+cor(diseasedata[,2],diseasedata[,17])
+
+plot(diseasedata[,3], diseasedata[,17], pch = 16, xlab = "Smoking",  
+     ylab = "Skin Cancer")
+cov(diseasedata[,3],diseasedata[,17])
+cor(diseasedata[,3],diseasedata[,17])
+
+plot(diseasedata[,5], diseasedata[,17], pch = 16, xlab = "Stroke",  
+     ylab = "Skin Cancer")
+cov(diseasedata[,5],diseasedata[,17])
+cor(diseasedata[,5],diseasedata[,17])
+
+plot(diseasedata[,6], diseasedata[,17], pch = 16, xlab = "Physical Health",  
+     ylab = "Skin Cancer")
+cov(diseasedata[,6],diseasedata[,17])
+cor(diseasedata[,6],diseasedata[,17])
+
+plot(diseasedata[,7], diseasedata[,17], pch = 16, xlab = "Mental Health",  
+     ylab = "Skin Cancer")
+cov(diseasedata[,7],diseasedata[,17])
+cor(diseasedata[,7],diseasedata[,17])
+
+plot(diseasedata[,8], diseasedata[,17], pch = 16, xlab = "DiffWalking",  
+     ylab = "Skin Cancer")
+cov(diseasedata[,8],diseasedata[,17])
+cor(diseasedata[,8],diseasedata[,17])
+
+plot(diseasedata[,9], diseasedata[,17], pch = 16, xlab = "Sex",  
+     ylab = "Skin Cancer")
+cov(diseasedata[,9],diseasedata[,17])
+cor(diseasedata[,9],diseasedata[,17])
+
+plot(diseasedata[,11], diseasedata[,17], pch = 16, xlab = "Diabetic",  
+     ylab = "Skin Cancer")
+cov(diseasedata[,11],diseasedata[,17])
+cor(diseasedata[,11],diseasedata[,17])
+
+plot(diseasedata[,14], diseasedata[,17], pch = 16, xlab = "Sleep Time",  
+     ylab = "Skin Cancer")
+cov(diseasedata[,14],diseasedata[,17])
+cor(diseasedata[,14],diseasedata[,17])
+
+plot(diseasedata[,15], diseasedata[,17], pch = 16, xlab = "Asthma",  
+     ylab = "Skin Cancer")
+cov(diseasedata[,15],diseasedata[,17])
+cor(diseasedata[,15],diseasedata[,17])
+```
+

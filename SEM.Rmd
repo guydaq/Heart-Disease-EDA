@@ -1,0 +1,111 @@
+---
+title: "Structural Equation Model"
+author: "Kate Sebaganji, Ndeh Awasum, Karen Vuong"
+date: '2023-05-03'
+output: html_document
+---
+
+
+```{r}
+if(!require(installr)) {
+  install.packages("installr"); 
+  require(installr)}
+```
+
+
+```{r}
+library(rmarkdown); library(knitr); library(readxl)
+library(moments); library(corrplot); library(pso)
+library(psych); library(GPArotation); library(lavaan); library(scatterplot3d);library(corrplot);library(moments)
+```
+
+
+```{r}
+diseasesdata<-  read.csv("Heart Disease Data Updated.csv")
+View(diseasesdata)
+View(diseasesdata)
+dim(diseasesdata)
+head(diseasesdata)
+
+diseasedata<-as.matrix(diseasesdata)      
+```
+
+```{r}
+covdis<- cov(diseasedata)
+covdis
+```
+
+```{r}
+DISEQN <- '
+        # Measurement Model (Factor Definition)
+        Weight =~ BMI + Diabetic + SkinCancer + HeartDisease + KidneyDisease
+        Wellbeing =~ PhysicalHealth  + GenHealth + DiffWalking + PhysicalActivity + SkinCancer + HeartDisease + KidneyDisease
+
+        # Measurement Model (Covariance Specification)
+        Smoking ~~ AlcoholDrinking
+        Smoking ~~ Sex
+        Wellbeing ~~ MentalHealth
+        MentalHealth ~~ Average.Age
+
+        # Structural Model
+        HeartDisease ~ Asthma + Stroke + Sex + SleepTime +Smoking + AlcoholDrinking + MentalHealth + Average.Age
+        KidneyDisease ~ Asthma + Stroke + Sex + SleepTime +Smoking + AlcoholDrinking + MentalHealth + Average.Age
+        SkinCancer ~ Asthma + Stroke + Sex + SleepTime +Smoking + AlcoholDrinking + MentalHealth + Average.Age
+'
+DISMOD <- sem(DISEQN, sample.cov = covdis, sample.nobs = 319795)
+DISMOD
+```
+
+```{r}
+parameterEstimates(DISMOD)[1:40,]
+# weight =~ Diabetic: A 1 unit increase in weight leads to a 0.071 unit increase in diabetics. This is a significant effect because the p-value is less than 0.01
+#well being =~ GenHealth: A 1 unit increase in well being leads to a 0.144 unit decrease in General health. The p-value is 0.000 and the z-score is very high. This is a significant effect.
+#HeartDisease  ~  Average.Age: A 1 unit increase in Average Age leads to a 0.003 unit increase in Heart disease. The p-value is 0.000 and this effect has the highest z-score as compared to the other dimensions that load to Heart disease
+#KidneyDisease  ~  Average.Age:A 1 unit increase in Average Age leads to a 0.001 unit increase in Kidney disease. The p-value is 0.000 and this effect has the highest z-score as compared to the other dimensions that load to Kidney disease
+#SkinCancer  ~  Average.Age:A 1 unit increase in Average Age leads to a 0.004 unit increase in Skin Cancer The p-value is 0.000 and this effect has the highest z-score as compared to the other dimensions that load to Skin cancer
+
+```
+
+```{r}
+fitMeasures(DISMOD,"nfi")
+```
+
+```{r}
+fitMeasures(DISMOD,"nnfi")
+```
+
+```{r}
+fitMeasures(DISMOD,"ifi")
+```
+
+```{r}
+fitMeasures(DISMOD,"cfi")
+```
+
+```{r}
+fitMeasures(DISMOD,"rmsea")
+```
+
+```{r}
+fitMeasures(DISMOD,"mfi")
+```
+
+```{r}
+fitMeasures(DISMOD,"gfi")
+```
+
+```{r}
+fitMeasures(DISMOD,"agfi")
+```
+
+```{r}
+fitMeasures(DISMOD, "pgfi")
+```
+
+```{r}
+fitMeasures(DISMOD,"aic")
+```
+
+```{r}
+fitMeasures(DISMOD,"caic")
+```
